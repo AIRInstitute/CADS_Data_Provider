@@ -1,0 +1,1003 @@
+{
+	"info": {
+		"_postman_id": "711d2320-b537-4996-a931-11e53cfb3c8b",
+		"name": "CADS_DATA_PROVIDER",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:5000/api/agri-farm",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "4d780fbb193d1490809b4616c8c90dbb8f6edeca",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Wheat farm\",\r\n  \"location\": \"100,0;101,0;101,1;100,1;100,0\",\r\n  \"type_location\": \"Polygon\",\r\n  \"address_locality\": \"Valdepeñas\",\r\n  \"address_country\": \"ES\",\r\n  \"address_street\": \"Camino de Membrilla 17\",\r\n  \"contact_point_telephone\": \"00349674532\",\r\n  \"contact_point_email\": \"wheatfarm@email.com\",\r\n  \"has_building\": \"urn:ngsi-ld:Building:32bbf1f4-8c67-4b5d-b19b-392879f72015,urn:ngsi-ld:Building:32bbf1f4-8c67-4b5d-b19b-392879f72035,urn:ngsi-ld:Building:35aa1f5f-7c78-4b7c-afc3-392d74f6b014\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:26ba4be0-4474-11e8-8ec1-ab9e0ea93835,urn:ngsi-ld:AgriParcel:2d5b8874-4474-11e8-8d6b-dbe14425b5e4,urn:ngsi-ld:AgriParcel:3f8b7982-4458-11e8-9ea6-db304564e5e6\",\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"description\": \"A farm producing wheat\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72551db2-91d1-43c3-8534-10f1044f7d98,urn:ngsi-ld:AgriApp:23564dsf-13ds-43d4-9734-10a124gds7d98\",\r\n  \"see_also\": \"https://example.org/concept/farm,https://datamodel.org/example/farm,https://datamodel.org/example/field\",\r\n  \"land_location\": \"100,0;101,0;101,1;100,1;100,0\",\r\n  \"land_location_type\": \"Polygon\",\r\n  \"owned_by\": \"urn:ngsi-ld:Person:430a3f2a-3434-49d1-a212-2f30a9824d99\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000/api/agri-farm",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"agri-farm"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "localhost:5000/api/agri-farm",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "111e41ca-9e76-4b1e-ba51-60fd5e3b9e40",
+								"type": "default",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer aa2ccd11a964acf403480d78bc834cc50103813a",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Wheat farm\",\r\n  \"location\": [\r\n    101,\r\n    0\r\n  ],\r\n  \"address_locality\": \"Valdepeñas\",\r\n  \"address_country\": \"ES\",\r\n  \"address_street\": \"Camino de Membrilla 17\",\r\n  \"contact_point_telephone\": \"00349674532\",\r\n  \"contact_point_email\": \"wheatfarm@email.com\",\r\n  \"has_building\": {\r\n    \"type\": \"Relationship\",\r\n    \"object\": [\r\n      \"urn:ngsi-ld:Building:32bbf1f4-8c67-4b5d-b19b-392879f72015\",\r\n      \"urn:ngsi-ld:Building:32bbf1f4-8c67-4b5d-b19b-392879f72035\"\r\n    ]\r\n  },\r\n  \"has_agri_parcel\": {\r\n    \"type\": \"Relationship\",\r\n    \"object\": [\r\n      \"urn:ngsi-ld:AgriParcel:26ba4be0-4474-11e8-8ec1-ab9e0ea93835\",\r\n      \"urn:ngsi-ld:AgriParcel:2d5b8874-4474-11e8-8d6b-dbe14425b5e4\"\r\n    ]\r\n  },\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"description\": \"A farm producing wheat\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72551db2-91d1-43c3-8534-10f1044f7d98\",\r\n  \"see_also\":  [\r\n        \"https://example.org/concept/farm\",\r\n        \"https://datamodel.org/example/farm\"\r\n      ]\r\n  ,\r\n  \"land_location\": [\r\n    [\r\n      100,\r\n      0\r\n    ],\r\n    [\r\n      101,\r\n      0\r\n    ],\r\n    [\r\n      101,\r\n      1\r\n    ],\r\n    [\r\n      100,\r\n      1\r\n    ],\r\n    [\r\n      100,\r\n      0\r\n    ]\r\n  ],\r\n  \"owned_by\": \"urn:ngsi-ld:Person:430a3f2a-3434-49d1-a212-2f30a9824d99\"\r\n\r\n\r\n}"
+						},
+						"url": {
+							"raw": "localhost:5000/api/agri-farm",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"agri-farm"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "localhost:5000/api/agri_carbon_footprint",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "66c79fcff0c609716676e883be0055c9dd8db370",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_yield\": \"urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"carbon_footprint_value\": 5,\r\n  \"carbon_footprint_accuracy_percent\": 10,\r\n  \"carbon_footprint_min_value\": 30,\r\n  \"carbon_footprint_unit_text\": \"Tons\",\r\n  \"estimation_start_at\": \"2017-01-01T01:20:00Z\",\r\n  \"estimation_end_at\": \"2017-01-01T01:20:00Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/agri_carbon_footprint",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"agri_carbon_footprint"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "localhost:5000/api/agri_carbon_footprint",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_yield\": \"urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"carbon_footprint\": {\r\n    \"value\": 5,\r\n    \"accuracy_percent\": 10,\r\n    \"min_value\": 30,\r\n    \"unit_text\": \"Tons\"\r\n  },\r\n  \"estimation_start_at\": \"2017-01-01T01:20:00Z\",\r\n  \"estimation_end_at\": \"2017-01-01T01:20:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/agri_carbon_footprint",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"agri_carbon_footprint"
+							]
+						}
+					},
+					"status": "INTERNAL SERVER ERROR",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.3 Python/3.11.3"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 15:46:47 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "session=4a10354c-e454-44a3-8fde-4934bdf9e956; Expires=Thu, 15 Jun 2023 15:46:47 GMT; HttpOnly; Path=/"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Internal Server Error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "localhost:5000/api/agri_crop",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "fc1a4477a1a23333851037cfecb874eab76e83b5",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"name\": \"Wheat\",\r\n  \"alternate_name\": \"Triticum aestivum\",\r\n  \"agro_voc_concept\": \"http://aims.fao.org/aos/agrovoc/c_7951\",\r\n  \"see_also\": \"https://example.org/concept/wheat,https://datamodel.org/example/wheat\",\r\n  \"description\": \"Spring wheat\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa931360259a;app:weat\",\r\n  \"has_agri_soil\": \"urn:ngsi-ld:AgriSoil:00411b56-bd1b-4551-96e0-a6e7fde9c840,urn:ngsi-ld:AgriSoil:e8a8389a-edf5-4345-8d2c-b98ac1ce8e2a\",\r\n  \"has_agri_fertiliser\": \"urn:ngsi-ld:AgriFertiliser:1b0d6cf7-320c-4a2b-b2f1-4575ea850c73,urn:ngsi-ld:AgriFertiliser:380973c8-4d3b-4723-a899-0c0c5cc63e7e\",\r\n  \"has_agri_pest\": \"urn:ngsi-ld:AgriPest:1b0d6cf7-320c-4a2b-b2f1-4575ea850c73,urn:ngsi-ld:AgriPest:380973c8-4d3b-4723-a899-0c0c5cc63e7e\",\r\n  \"planting_from\": \"[{\\\"dateRange\\\": \\\"-09-28/-10-12\\\", \\\"description\\\": \\\"Best Season\\\"}]\",\r\n  \"harvesting_interval\": \"[{\\\"dateRange\\\": \\\"-09-28/-10-12\\\", \\\"description\\\": \\\"Best Season\\\"}]\",\r\n  \"watering_frequency\": \"daily\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/agri_crop",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"agri_crop"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "localhost:5000/api/agri_carbon_footprint",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_yield\": \"urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"carbon_footprint\": {\r\n    \"value\": 5,\r\n    \"accuracy_percent\": 10,\r\n    \"min_value\": 30,\r\n    \"unit_text\": \"Tons\"\r\n  },\r\n  \"estimation_start_at\": \"2017-01-01T01:20:00Z\",\r\n  \"estimation_end_at\": \"2017-01-01T01:20:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/agri_carbon_footprint",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"agri_carbon_footprint"
+							]
+						}
+					},
+					"status": "INTERNAL SERVER ERROR",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.3 Python/3.11.3"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 15:46:47 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "session=4a10354c-e454-44a3-8fde-4934bdf9e956; Expires=Thu, 15 Jun 2023 15:46:47 GMT; HttpOnly; Path=/"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Internal Server Error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "localhost:5000/api/agri_green_house",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "fc1a4477a1a23333851037cfecb874eab76e83b5",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"relative_humidity\": 45,\r\n  \"co2\": 400,\r\n  \"date_created\": \"2023-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2023-03-01T12:30:00Z\",\r\n  \"owned_by\": \"urn:ngsi-ld:Person:abcd1234-3434-49d1-a212-2f30a9824d99\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:98765fb2-2231-41c3-1234-56f1044f7d98,urn:ngsi-ld:AgriApp:abcd1234-3434-49d1-a212-2f30a9824d99\",\r\n  \"see_also\": \"https://example.org/concept/greenhouse,https://datamodel.org/example/greenhouse\",\r\n  \"belongs_to\": \"urn:ngsi-ld:AgriFarm:1a2b3c4d-5e6f-7g8h-9i0j-klmnopqrstu\",\r\n  \"has_agri_parcel_parent\": \"urn:ngsi-ld:AgriParcel:12345abc-6de7-8901-2345-fghijk6789\",\r\n  \"has_agri_parcel_children\": \"urn:ngsi-ld:AgriParcel:54321cba-7de6-8901-2345-fghijk6789,urn:ngsi-ld:AgriParcel:abc123de-456f-789g-0hij-klmnopqrstuv\",\r\n  \"has_weather_observed\": \"urn:ngsi-ld:WeatherObserved:abcdefgh-ijkl-mnop-qrst-uvwxyz0123\",\r\n  \"has_water_quality_observed\": \"urn:ngsi-ld:WaterQualityObserved:abc123def-456ghi-789jkl-0mnopqrstuvwxyz,urn:ngsi-ld:WaterQualityObserved:def456ghi-789jkl-0mnop-abc123qrstuvwxyz\",\r\n  \"leaf_temperature\": 25,\r\n  \"daily_light\": 1000,\r\n  \"drain_flow\": 10,\r\n  \"has_device\": \"urn:ngsi-ld:Device:abcd1234-efgh-5678-ijkl-9mnopqrstuvwxyz,urn:ngsi-ld:Device:wxyz1234-lmno-5678-pqrs-9abcdefghijk\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/agri_green_house",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"agri_green_house"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "localhost:5000/api/agri_carbon_footprint",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_yield\": \"urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"carbon_footprint\": {\r\n    \"value\": 5,\r\n    \"accuracy_percent\": 10,\r\n    \"min_value\": 30,\r\n    \"unit_text\": \"Tons\"\r\n  },\r\n  \"estimation_start_at\": \"2017-01-01T01:20:00Z\",\r\n  \"estimation_end_at\": \"2017-01-01T01:20:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/agri_carbon_footprint",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"agri_carbon_footprint"
+							]
+						}
+					},
+					"status": "INTERNAL SERVER ERROR",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.3 Python/3.11.3"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 15:46:47 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "session=4a10354c-e454-44a3-8fde-4934bdf9e956; Expires=Thu, 15 Jun 2023 15:46:47 GMT; HttpOnly; Path=/"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Internal Server Error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "localhost:5000/api/agri_parcel",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "c657efd0e0a095c41248ab3027cc8f19d495c796",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"location\": \"100,0\",\r\n  \"location_type\": \"Point\",\r\n  \"area\": 200,\r\n  \"description\": \"Spring wheat\",\r\n  \"category\": \"arable\",\r\n  \"belongs_to\": \"urn:ngsi-ld:AgriFarm:f67adcbc-4479-22bc-9de1-cb228de7a765\",\r\n  \"owned_by\": \"urn:ngsi-ld:Person:fce9dcbc-4479-11e8-9de1-cb228de7a15c\",\r\n  \"has_agri_parcel_parent\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel_children\": \"urn:ngsi-ld:AgriParcel:26ba4be0-4474-11e8-8ec1-ab9e0ea93835,urn:ngsi-ld:AgriParcel:2d5b8874-4474-11e8-8d6b-dbe14425b5e4\",\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:36021150-4474-11e8-a721-af07c5fae7c8\",\r\n  \"has_air_quality_observed\": \"urn:ngsi-ld:AirQualityObserved:B3F76EA170D030BCD9E036DCC9BEA22B\",\r\n  \"crop_status\": \"seeded\",\r\n  \"last_planted_at\": \"2016-08-23T10:18:16Z\",\r\n  \"has_agri_soil\": \"urn:ngsi-ld:AgriSoil:429d1338-4474-11e8-b90a-d3e34ceb73df\",\r\n  \"has_device\": \"urn:ngsi-ld:Device:4a40aeba-4474-11e8-86bf-03d82e958ce6,urn:ngsi-ld:Device:63217d24-4474-11e8-9da2-03d82e958ce6\",\r\n  \"soil_texture_type\": \"Clay\",\r\n  \"irrigation_system_type\": \"Drip irrigation\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:98765fb2-2231-41c3-1234-56f1044f7d98,urn:ngsi-ld:AgriApp:abcd1234-3434-49d1-a212-2f30a9824d99\",\r\n  \"see_also\": \"https://example.org/concept/agriparcel,https://datamodel.org/example/agriparcel\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/agri_parcel",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"agri_parcel"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "localhost:5000/api/agri_carbon_footprint",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_yield\": \"urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"carbon_footprint\": {\r\n    \"value\": 5,\r\n    \"accuracy_percent\": 10,\r\n    \"min_value\": 30,\r\n    \"unit_text\": \"Tons\"\r\n  },\r\n  \"estimation_start_at\": \"2017-01-01T01:20:00Z\",\r\n  \"estimation_end_at\": \"2017-01-01T01:20:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/agri_carbon_footprint",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"agri_carbon_footprint"
+							]
+						}
+					},
+					"status": "INTERNAL SERVER ERROR",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.3 Python/3.11.3"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 15:46:47 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "session=4a10354c-e454-44a3-8fde-4934bdf9e956; Expires=Thu, 15 Jun 2023 15:46:47 GMT; HttpOnly; Path=/"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Internal Server Error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "localhost:5000/api/agri_parcel_operation",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1543b574768a2d4b9c2bed8958a345beb2281943",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa931360259a,urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa941260259b\",\r\n  \"see_also\": \"https://example.org/concept/agriparcelop,https://datamodel.org/example/agriparcelop\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:318366a9-7643-4d8e-9a11-c76a8c29d8eb\",\r\n  \"operation_type\": \"fertiliser\",\r\n  \"description\": \"Monthly fertiliser application\",\r\n  \"result\": \"ok\",\r\n  \"planned_start_at\": \"2016-08-22T10:18:16Z\",\r\n  \"planned_end_at\": \"2016-08-28T10:18:16Z\",\r\n  \"status\": \"finished\",\r\n  \"has_operator\": \"urn:ngsi-ld:Person:fce9dcbc-4479-11e8-9de1-cb228de7a15c\",\r\n  \"started_at\": \"2016-08-22T10:18:16Z\",\r\n  \"ended_at\": \"2016-08-28T10:18:16Z\",\r\n  \"reported_at\": \"2016-08-28T10:18:16Z\",\r\n  \"has_agri_product_type\": \"urn:ngsi-ld:AgriProductType:a8f616b8-13fb-473a-8e61-b7a80c6c93ec\",\r\n  \"quantity\": 40,\r\n  \"water_source\": \"rainwater capture\",\r\n  \"work_order\": \"https://example.com/agriparcelrecords/workorder1\",\r\n  \"work_record\": \"https://example.com/agriparcelrecords/workrecord1\",\r\n  \"irrigation_record\": \"https://example.com/agriparcelrecords/irrigationrecord1\",\r\n  \"diesel_fuel_consumption\": 33,\r\n  \"gasoline_fuel_consumption\": 33,\r\n  \"diesel_fuel_consumption_max_value\": 50,\r\n  \"diesel_fuel_consumption_min_value\": 25,\r\n  \"diesel_fuel_consumption_unit_text\": \"liters\",\r\n  \"gasoline_fuel_consumption_max_value\": 50,\r\n  \"gasoline_fuel_consumption_min_value\": 25,\r\n  \"gasoline_fuel_consumption_unit_text\": \"liters\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/agri_parcel_operation",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"agri_parcel_operation"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "localhost:5000/api/agri_carbon_footprint",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_yield\": \"urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"carbon_footprint\": {\r\n    \"value\": 5,\r\n    \"accuracy_percent\": 10,\r\n    \"min_value\": 30,\r\n    \"unit_text\": \"Tons\"\r\n  },\r\n  \"estimation_start_at\": \"2017-01-01T01:20:00Z\",\r\n  \"estimation_end_at\": \"2017-01-01T01:20:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/agri_carbon_footprint",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"agri_carbon_footprint"
+							]
+						}
+					},
+					"status": "INTERNAL SERVER ERROR",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.3 Python/3.11.3"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 15:46:47 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "session=4a10354c-e454-44a3-8fde-4934bdf9e956; Expires=Thu, 15 Jun 2023 15:46:47 GMT; HttpOnly; Path=/"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Internal Server Error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "localhost:5000/api/agri_soil",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "92a911ebcabbc8bdbf5c6fa10a017c3c5d242d9e",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"name\": \"Clay\",\r\n  \"alternate_name\": \"Heavy soil\",\r\n  \"description\": \"Fine grained, poor draining soil. Particle size less than 0.002mm\",\r\n  \"agro_voc_concept\": \"http://aims.fao.org/aos/agrovoc/c_7951\",\r\n  \"see_also\": \"https://example.org/concept/clay\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa931360259a,urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa931360259a\",\r\n  \"has_agri_product_type\": \"urn:ngsi-ld:AgriProductType:ea54eedf-d5a7-4e44-bddd-50e9935237c0,urn:ngsi-ld:AgriProductType:275b4c08-5e52-4bb7-8523-74ce5d0007de\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/agri_soil",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"agri_soil"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "localhost:5000/api/agri_carbon_footprint",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_yield\": \"urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"carbon_footprint\": {\r\n    \"value\": 5,\r\n    \"accuracy_percent\": 10,\r\n    \"min_value\": 30,\r\n    \"unit_text\": \"Tons\"\r\n  },\r\n  \"estimation_start_at\": \"2017-01-01T01:20:00Z\",\r\n  \"estimation_end_at\": \"2017-01-01T01:20:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/agri_carbon_footprint",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"agri_carbon_footprint"
+							]
+						}
+					},
+					"status": "INTERNAL SERVER ERROR",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.3 Python/3.11.3"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 15:46:47 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "session=4a10354c-e454-44a3-8fde-4934bdf9e956; Expires=Thu, 15 Jun 2023 15:46:47 GMT; HttpOnly; Path=/"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Internal Server Error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "localhost:5000/api/agri_parcel_record",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "c657efd0e0a095c41248ab3027cc8f19d495c796",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:2d5b8874-4474-11e8-8d6b-dbe14425b5e4\",\r\n  \"type_location\": \"Point\",\r\n  \"location\": \"100.0,0.0\",\r\n  \"soil_temperature_unit\": \"CEL\",\r\n  \"soil_temperature\": 10.5,\r\n  \"air_temperature_unit\": \"CEL\",\r\n  \"air_temperature_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"air_temperature\": 15.3,\r\n  \"relative_humidity\": 60,\r\n  \"relative_humidity_unit\": \"P1\",\r\n  \"relative_humidity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"description\": \"Soil and weather conditions\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72551db2-91d1-43c3-8534-10f1044f7d98,urn:ngsi-ld:AgriApp:72551db2-91d1-43c3-8534-10f1044f7d99\",\r\n  \"see_also\": \"https://example.org/concept/agriparcelrecord,https://example.org/concept/agriparcelrecord2\",\r\n  \"soil_moisture_vwc\": 0.35,\r\n  \"soil_moisture_ec\": 0.15,\r\n  \"soil_salinity\": 0.02,\r\n  \"leaf_wetness\": 0.8,\r\n  \"leaf_relative_humidity\": 70,\r\n  \"leaf_relative_humidity_unit\": \"P1\",\r\n  \"leaf_relative_humidity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"leaf_temperature\": 12.2,\r\n  \"solar_radiation\": 900,\r\n  \"atmospheric_pressure\": 1013,\r\n  \"has_device\": \"urn:ngsi-ld:Device:8a95babe-2f0e-43e7-a1ca-03d2b9ac0f3e,urn:ngsi-ld:Device:8a95babe-2f0e-43e7-a1ca-03d2b9ac0f3f\",\r\n  \"observed_at\": \"2021-09-01T10:00:00Z\",\r\n  \"soil_salinity_unit\": \"D10\",\r\n  \"soil_salinity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"leaf_wetness_unit\": \"P1\",\r\n  \"leaf_wetness_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"leaf_temperature_unit\": \"CEL\",\r\n  \"leaf_temperature_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"solar_radiation_unit\": \"CEL\",\r\n  \"solar_radiation_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"atmospheric_pressure_unit\": \"A97\",\r\n  \"atmospheric_pressure_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"soil_moisture_vwc_unit\": \"C62\",\r\n  \"soil_moisture_vwc_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"soil_moisture_ec_unit\": \"D10\",\r\n  \"soil_moisture_ec_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"depth\": 20,\r\n  \"depth_unit_code\": \"CMT\",\r\n  \"timestamp\": \"2023-05-16T01:20:00Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/agri_parcel_record",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"agri_parcel_record"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "localhost:5000/api/agri_carbon_record",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_yield\": \"urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"carbon_footprint\": {\r\n    \"value\": 5,\r\n    \"accuracy_percent\": 10,\r\n    \"min_value\": 30,\r\n    \"unit_text\": \"Tons\"\r\n  },\r\n  \"estimation_start_at\": \"2017-01-01T01:20:00Z\",\r\n  \"estimation_end_at\": \"2017-01-01T01:20:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/agri_carbon_footprint",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"agri_carbon_footprint"
+							]
+						}
+					},
+					"status": "INTERNAL SERVER ERROR",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.3 Python/3.11.3"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 15:46:47 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "session=4a10354c-e454-44a3-8fde-4934bdf9e956; Expires=Thu, 15 Jun 2023 15:46:47 GMT; HttpOnly; Path=/"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Internal Server Error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "localhost:5000/api/agri_soil_state",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "567abb140bed5c304bdcedf609f74ad57e9d0a23",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"date_of_measurement\": \"2017-01-01T01:20:00Z\",\r\n  \"acidity\": 7,\r\n  \"acidity_unit_code\": \"pH\",\r\n  \"acidity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"electrical_conductivity\": 1,\r\n  \"electrical_conductivity_unit\": \"ohm/meter\",\r\n  \"electrical_conductivity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"density\": 10,\r\n  \"density_unit\": \"kg/m3\",\r\n  \"density_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"humus\": 5,\r\n  \"humus_unit_code\": \"percent\",\r\n  \"humus_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"has_agri_soil\": \"urn:ngsi-ld:AgriSoil:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_greenhouse\": \"urn:ngsi-ld:AgriGreenhouse:1ea0f120-4474-11e8-9919-672036642081\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/agri_soil_state",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"agri_soil_state"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "localhost:5000/api/agri_carbon_footprint",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_yield\": \"urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"carbon_footprint\": {\r\n    \"value\": 5,\r\n    \"accuracy_percent\": 10,\r\n    \"min_value\": 30,\r\n    \"unit_text\": \"Tons\"\r\n  },\r\n  \"estimation_start_at\": \"2017-01-01T01:20:00Z\",\r\n  \"estimation_end_at\": \"2017-01-01T01:20:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/agri_carbon_footprint",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"agri_carbon_footprint"
+							]
+						}
+					},
+					"status": "INTERNAL SERVER ERROR",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.3 Python/3.11.3"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 15:46:47 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "session=4a10354c-e454-44a3-8fde-4934bdf9e956; Expires=Thu, 15 Jun 2023 15:46:47 GMT; HttpOnly; Path=/"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Internal Server Error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "localhost:5000/api/agri_yield",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "567abb140bed5c304bdcedf609f74ad57e9d0a23",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"date_of_measurement\": \"2017-01-01T01:20:00Z\",\r\n  \"acidity\": 7,\r\n  \"acidity_unit_code\": \"pH\",\r\n  \"acidity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"electrical_conductivity\": 1,\r\n  \"electrical_conductivity_unit\": \"ohm/meter\",\r\n  \"electrical_conductivity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"density\": 10,\r\n  \"density_unit\": \"kg/m3\",\r\n  \"density_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"humus\": 5,\r\n  \"humus_unit_code\": \"percent\",\r\n  \"humus_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"has_agri_soil\": \"urn:ngsi-ld:AgriSoil:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_greenhouse\": \"urn:ngsi-ld:AgriGreenhouse:1ea0f120-4474-11e8-9919-672036642081\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/agri_soil_state",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"agri_soil_state"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "localhost:5000/api/agri_carbon_footprint",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_yield\": \"urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"carbon_footprint\": {\r\n    \"value\": 5,\r\n    \"accuracy_percent\": 10,\r\n    \"min_value\": 30,\r\n    \"unit_text\": \"Tons\"\r\n  },\r\n  \"estimation_start_at\": \"2017-01-01T01:20:00Z\",\r\n  \"estimation_end_at\": \"2017-01-01T01:20:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/agri_carbon_footprint",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"agri_carbon_footprint"
+							]
+						}
+					},
+					"status": "INTERNAL SERVER ERROR",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.3 Python/3.11.3"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 15:46:47 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "session=4a10354c-e454-44a3-8fde-4934bdf9e956; Expires=Thu, 15 Jun 2023 15:46:47 GMT; HttpOnly; Path=/"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Internal Server Error\"\n}"
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "aa2ccd11a964acf403480d78bc834cc50103813a",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "68cb858b16005ee26810d019df64358f9444ed4a"
+		}
+	]
+}

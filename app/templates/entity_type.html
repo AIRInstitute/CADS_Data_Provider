@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/indexstyle.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
+              <a class="navbar-brand mr-auto" href="#">{{ user.username }} - urn:ngsi-ld:Person:{{ user.id }}</a>
+
+                <div class="d-flex">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a href="#" class="nav-link" id="logout-link">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div class="col-md-12 mt-3">
+          <div class="row justify-content-center">
+              <div class="col-md-8">
+                  <div class="card">
+                      <div class="card-header bg-info text-white">
+                          <h5 class="mb-0">My Entities</h5>
+                      </div>
+                      <div class="card-body" id="entity-body">
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>  
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('logout-link').addEventListener('click', function(event) {
+    event.preventDefault();
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.href = '/';
+        } else {
+            alert('Logout error');
+        }
+    });
+});
+
+
+
+fetch('/context-broker/entity/{{ entity_type }}', {credentials: 'same-origin'})
+  .then(response => response.json())
+  .then(data => {
+    const entities = data.entities;
+    if (entities.length > 0) {
+      const listGroup = document.createElement('ul');
+      listGroup.className = 'list-group';
+      entities.forEach(entity => {
+          const listItem = document.createElement('li');
+          listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+          const entityName = entity.name ? entity.name.value : '';
+          const entityDescription = entity.description ? entity.description.value : '';
+          listItem.innerHTML = `
+            ${entity.id} - ${entityName} - ${entityDescription}
+            <div>
+              <a href="/context-broker/entity/id/${entity.id}" class="btn btn-sm btn-primary"><i class="fa fa-eye"></i></a>
+            </div>
+          `;
+          listGroup.appendChild(listItem);
+      });
+
+      const cardBody = document.querySelector('#entity-body');
+      cardBody.innerHTML = '';
+      cardBody.appendChild(listGroup);
+    } else {
+      const cardBody = document.querySelector('#entity-body');
+      cardBody.innerHTML = '<p>There are no entities yet.</p>';
+    }
+  })
+  .catch(err => console.error('Error fetching entities:', err));
+</script>
+{% endblock %}

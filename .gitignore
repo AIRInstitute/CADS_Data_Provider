@@ -1,0 +1,13 @@
+venv/
+instance/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+*.swp
+*.*~
+.DS_Store
+.VSCodeCounter/
+app/config.py   
+flask_session/

@@ -1,0 +1,26 @@
+.container {
+    background-color: #f2f2f2;
+    border: 10px solid #d9d9d9;
+    margin: 60px auto; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh; 
+    max-width: 800px;
+    min-width: 400px;
+}
+  
+
+body {
+    background-color: #e6e6e6;
+    padding: 80px; 
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.btn-block {
+    margin-top: 20px;
+    margin-bottom: 0;
+}

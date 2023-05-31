@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/indexstyle.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
+                <a class="navbar-brand mr-auto" href="#">{{ user.username }} - urn:ngsi-ld:Person:{{ user.id }}</a>
+                <div class="d-flex">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a href="#" class="nav-link" id="logout-link">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div class="col-md-12 mt-3">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">My apps</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="token-form">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                                <button type="button" id="get-token-btn" class="btn btn-primary">Get Token</button>
+                                <button type="button" id="get-x-token-btn" class="btn btn-secondary">Get X Auth Token</button>
+                            </form>
+                            <p id="access-token"></p>
+                            <p id="x-auth-token"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('logout-link').addEventListener('click', function(event) {
+    event.preventDefault();
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.href = '/';
+        } else {
+            alert('Logout error');
+        }
+    });
+});
+
+document.getElementById('get-token-btn').addEventListener('click', function(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    fetch(`/authentication/get_access_token?email=${email}&password=${password}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/plain'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.text())  
+    .then(data => {
+        console.log('Access Token:', data);
+        document.getElementById('access-token').textContent = 'Access Token: ' + data;
+    })
+    .catch(err => console.error('Error fetching Access Token:', err));  
+  });
+
+  document.getElementById('get-x-token-btn').addEventListener('click', function(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    fetch(`/authentication/get_x_access_token?email=${email}&password=${password}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/plain'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('X Auth Token:', data);
+        document.getElementById('x-auth-token').textContent = 'X Auth Token: ' + data;
+    })
+    .catch(err => console.error('Error fetching X Auth Token:', err));  
+  });
+</script>
+{% endblock %}  
