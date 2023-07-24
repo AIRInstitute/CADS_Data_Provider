@@ -103,7 +103,7 @@ fetch('/keyrock/apps', {credentials: 'same-origin'})
   fetch('/context-broker/entity/types', {credentials: 'same-origin'})  
     .then(response => response.json())  
     .then(data => {
-      const entityTypes = data.entity_types.typeList;  
+      const entityTypes = data.entity_types;  
       if (entityTypes.length > 0) {
         const listGroup = document.createElement('ul');
         listGroup.className = 'list-group';

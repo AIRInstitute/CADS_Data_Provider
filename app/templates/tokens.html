@@ -37,9 +37,11 @@
                                 </div>
                                 <button type="button" id="get-token-btn" class="btn btn-primary">Get Token</button>
                                 <button type="button" id="get-x-token-btn" class="btn btn-secondary">Get X Auth Token</button>
+                                <button type="button" id="get-jwt-token-btn" class="btn btn-success">Get JWT Token</button>
                             </form>
                             <p id="access-token"></p>
                             <p id="x-auth-token"></p>
+                            <p id="jwt-token"></p>
                         </div>
                     </div>
                 </div>
@@ -104,5 +106,23 @@ document.getElementById('get-token-btn').addEventListener('click', function(even
     })
     .catch(err => console.error('Error fetching X Auth Token:', err));  
   });
+
+  document.getElementById('get-jwt-token-btn').addEventListener('click', function(event) {
+    event.preventDefault();
+    fetch('/authentication/get_jwt_access_token', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/plain'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.text())  
+    .then(data => {
+        console.log('JWT Token:', data);
+        document.getElementById('jwt-token').textContent = 'JWT Token: ' + data;
+    })
+    .catch(err => console.error('Error fetching JWT Token:', err));  
+});
+
 </script>
 {% endblock %}  

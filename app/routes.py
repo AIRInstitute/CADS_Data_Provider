@@ -2,7 +2,7 @@
 from flask import current_app, make_response, redirect, request, jsonify, Blueprint, render_template, url_for, session
 from app.auth import load_user
 from flask_login import current_user, login_required, login_user, logout_user
-from app.config import ACCES_TOKEN_URL, AUTHORIZATION_URL, CLIENT_ID, CLIENT_SECRET, DEVELOPMENT,KEYROCK_BASE_URL,  REDIRECT_URI, USER_INFO_URL
+from app.config import KEYROCK_ACCES_TOKEN_URL, KEYROCK_AUTHORIZATION_URL, APP_CLIENT_ID, APP_CLIENT_SECRET, DEVELOPMENT,KEYROCK_BASE_URL,  APP_REDIRECT_URI, KEYROCK_LOGOUT, KEYROCK_USER_INFO_URL
 import requests
 import secrets
 from flask.sessions import SecureCookieSessionInterface
@@ -30,7 +30,6 @@ if DEVELOPMENT:
 
 
     @main_blueprint.route("/tokens", methods=["GET"])
-    @login_required
     def get_tokens():
         # Route for displaying tokens, requires login, displays user information.
         user = current_user
@@ -60,7 +59,7 @@ if DEVELOPMENT:
 
         secure_cookie = SecureCookieSessionInterface().get_signing_serializer(app_instance)
 
-        keyrock_auth_url = f'{AUTHORIZATION_URL}?response_type=code&client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&state={state}'
+        keyrock_auth_url = f'{KEYROCK_AUTHORIZATION_URL}?response_type=code&client_id={APP_CLIENT_ID}&redirect_uri={APP_REDIRECT_URI}&state={state}'
 
         secure_cookie_cookie = secure_cookie.dumps({"state": state})
         response = make_response(redirect(keyrock_auth_url))
@@ -85,18 +84,18 @@ if DEVELOPMENT:
         payload = {
             'grant_type': 'authorization_code',
             'code': code,
-            'client_id': CLIENT_ID,
-            'client_secret': CLIENT_SECRET,
-            'redirect_uri': REDIRECT_URI,
+            'client_id': APP_CLIENT_ID,
+            'client_secret': APP_CLIENT_SECRET,
+            'redirect_uri': APP_REDIRECT_URI,
         }
-        response = requests.post(ACCES_TOKEN_URL, data=payload)
+        response = requests.post(KEYROCK_ACCES_TOKEN_URL, data=payload)
 
         token_data = response.json()
         access_token = token_data.get('access_token')
         session['access_token'] = access_token
 
         headers = {'Authorization': f'Bearer {access_token}'}
-        user_response = requests.get(USER_INFO_URL, headers=headers)
+        user_response = requests.get(KEYROCK_USER_INFO_URL, headers=headers)
         user_data = user_response.json()
         session['user_data'] = user_data
         user_id = user_data.get('id')
@@ -122,7 +121,7 @@ if DEVELOPMENT:
         # Route for logout, logs out the user, clears the session, and redirects to Keyrock logout page.
         logout_user()  
         session.clear()  
-        keyrock_logout_url = f'{KEYROCK_BASE_URL}/auth/logout'
+        keyrock_logout_url = f'{KEYROCK_LOGOUT}'
         return redirect(url_for('routes.index'))
 
     

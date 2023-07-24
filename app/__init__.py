@@ -4,7 +4,7 @@ from flask_restx import  Api, fields
 import json
 from flask_session import Session
 
-from app.config import AUTHORIZATIONS
+from app.config import SWAGGER_AUTHORIZATIONS
 
 
 
@@ -46,7 +46,7 @@ def create_app():
     from app.routes import main_blueprint
     app.register_blueprint(main_blueprint)
 
-    api = Api(app, version='1.0', title='Agrisync API', description='Agrisync API', doc='/api-docs/', authorizations=AUTHORIZATIONS)
+    api = Api(app, version='1.0', title='Agrisync API', description='Agrisync API', doc='/api-docs/', authorizations=SWAGGER_AUTHORIZATIONS)
 
 
     for ns in get_routes_namespaces():

@@ -1,9 +1,9 @@
 
 from flask import Blueprint, request, jsonify
 from app.models import  User
-from app.utils import add_policy, api_key_required, get_token, get_x_auth_token, list_policies, store_policy_in_ar
+from app.utils import add_policy, api_key_required, get_token, get_token_with_jwt, get_x_auth_token, list_policies, store_policy_in_ar, test_policy
 from flask_login import current_user, login_required
-from app.config import  DEVELOPMENT, KEYROCK_ADMIN_PASSWORD, KEYROCK_ADMIN_USERNAME, KEYROCK_BASE_URL, ORION_IP, ORION_PORT, KEYROCK_REGISTER_URL
+from app.config import  DEVELOPMENT, APP_KEYROCK_PASSWORD, APP_KEYROCK_USERNAME, KEYROCK_APPLICATION_URL_1, KEYROCK_APPLICATION_URL_2, KONG_ENTITIES, KONG_ENTITIES_TYPE, KEYROCK_USERS_URL
 import requests
 from flask_restx import  Resource, Namespace
 from app.models import db
@@ -56,6 +56,14 @@ class GetXAccessToken(Resource):
         return get_x_auth_token(username=username, password=password)
 
 
+@authentication_ns.route('/get_jwt_access_token')
+class GetJWTAccessToken(Resource):
+    # Resource class for getting access token using JWT
+    @authentication_ns.doc('get_jwt_access_token')
+    def get(self):
+        return get_token_with_jwt()
+
+
 @context_broker_ns.route("/entity/<entity>")
 class GetEntitiesByType(Resource):
     # Resource class for fetching entities by their type
@@ -63,13 +71,13 @@ class GetEntitiesByType(Resource):
     @context_broker_ns.param('entity', 'The type of entity')
     @conditional_decorator(login_required, api_key_required)
     def get(self, entity):
+        token = get_token_with_jwt()
         headers = {
-            "Accept": "application/ld+json",
-            "fiware-service": "openiot",
-            "fiware-servicepath": "/",
+            "Authorization" : f'Bearer {token}',
+            "Content-Type" :  "application/json"
         }
 
-        url = f"http://{ORION_IP}:{ORION_PORT}/ngsi-ld/v1/entities?type={entity}"
+        url = f"{KONG_ENTITIES_TYPE}{entity}"
 
         response = requests.get(url, headers=headers)
 
@@ -88,15 +96,17 @@ class GetEntityById(Resource):
     @context_broker_ns.param('entity_id', 'The ID of the entity to fetch')
     @conditional_decorator(login_required, api_key_required)
     def get(self, entity_id):
+        token = get_token_with_jwt()
         headers = {
-            "Accept": "application/ld+json",
-            "fiware-service": "openiot",
-            "fiware-servicepath": "/",
+            "Authorization" : f'Bearer {token}',
+            "Content-Type" :  "application/json"
         }
 
-        url = f"http://{ORION_IP}:{ORION_PORT}/ngsi-ld/v1/entities/{entity_id}"
+        url = f"{KONG_ENTITIES}/{entity_id}"
 
         response = requests.get(url, headers=headers)
+        print("response", response)
+        
 
         if response.status_code == 200:
             entity = response.json()
@@ -111,21 +121,11 @@ class GetAllEntityTypes(Resource):
     @context_broker_ns.doc('get_all_entity_types')
     @conditional_decorator(login_required, api_key_required)
     def get(self):
-        headers = {
-            "Accept": "application/ld+json",
-            "fiware-service": "openiot",
-            "fiware-servicepath": "/",
+        return {
+            "entity_types" : [
+                "AgriFarm", "AgriCarbonFootprint", "AgriCrop", "AgriGreenHouse", "AgriParcel", "AgriParcelOperation", "AgriParcelRecord", "AgriSoil", "AgriSoilState", "AgriYield"
+            ]
         }
-
-        url = f"http://{ORION_IP}:{ORION_PORT}/ngsi-ld/v1/types"
-
-        response = requests.get(url, headers=headers)
-
-        if response.status_code == 200:
-            entity_types = response.json()
-            return {"entity_types": entity_types}, 200
-        else:
-            return {"error": f"Error al obtener tipos de entidades del Context Broker: {response.status_code} - {response.text}"}, response.status_code
 
 
 
@@ -137,27 +137,35 @@ class StoreUserPolicy(Resource):
     @authorization_ns.param('entity_type', 'Entity type', required=True)
     @authorization_ns.param('action', 'Action', required=True)
     @authorization_ns.param('allowed_attributes', 'Allowed attributes', required=True)
-    @login_required
+    @api_key_required
     def post(self):
-        entity_type = request.form.get("entity_type") or request.json.get("entity_type")
-        action = request.form.get("action") or request.json.get("action")
-        allowed_attributes = request.form.get("allowed_attributes") or request.json.get("allowed_attributes")
+        entity_type = request.args.get("entity_type")
+        action =  request.args.get("action")
+        allowed_attributes = request.args.get("allowed_attributes")
         if not (entity_type and action and allowed_attributes):
             return {"error": "Faltan campos obligatorios."}, 400
 
         policy = add_policy(entity_type, action, allowed_attributes)
-        store_policy_in_ar(policy)
+        message, error = store_policy_in_ar(policy)
 
-        return {"message": "Política almacenada con éxito."}, 201
+        return message, error
 
-
+@authorization_ns.route("/test-policy")
+class TestUserPolicy(Resource):
+    # Resource class for test user policy
+    authorization_ns.doc('test_user_policies')
+    def post(self):
+        print("test")
+        message, error = test_policy()
+        return message, error
+    
 
 @authorization_ns.route("/list-policies")
 class ListUserPolicies(Resource):
     # Resource class for listing user policies
     @authorization_ns.doc('list_user_policies')
-    @login_required
-    def get(self):
+    @api_key_required
+    def post(self):
         policies = list_policies()
         if policies is not None:
             return {"policies": policies}, 200
@@ -192,9 +200,8 @@ if DEVELOPMENT:
             if password != password_confirm:
                 return jsonify({"error": "Passwords do not match."}), 400
 
-            admin_email = "admin@test.com"
-            admin_password = "1234"
-            admin_token = get_x_auth_token(admin_email, admin_password)
+            
+            admin_token = get_x_auth_token(APP_KEYROCK_USERNAME, APP_KEYROCK_PASSWORD)
             headers = {
                 'Content-Type': 'application/json',
                 'X-Auth-token': admin_token,
@@ -208,7 +215,7 @@ if DEVELOPMENT:
                 }
             }
 
-            response = requests.post(KEYROCK_REGISTER_URL, json=payload, headers=headers)
+            response = requests.post(KEYROCK_USERS_URL, json=payload, headers=headers)
 
             if response.status_code == 201:  # User created successfully
                 user_data = response.json()
@@ -229,8 +236,8 @@ if DEVELOPMENT:
         @keyrock_ns.doc('user_from_app', responses={200: ('OK')})
         @keyrock_ns.param('app_id', 'The ID of the app to fetch')
         def get(self, app_id):
-            url = f'{KEYROCK_BASE_URL}/v1/applications/{app_id}/users'
-            x_auth_token = get_x_auth_token(KEYROCK_ADMIN_USERNAME, KEYROCK_ADMIN_PASSWORD)
+            url = f'{KEYROCK_APPLICATION_URL_1}/{app_id}/{KEYROCK_APPLICATION_URL_2}'
+            x_auth_token = get_x_auth_token(APP_KEYROCK_USERNAME, APP_KEYROCK_PASSWORD)
             headers = {
                 'X-Auth-token': x_auth_token
             }
@@ -249,9 +256,9 @@ if DEVELOPMENT:
         @keyrock_ns.doc('get_apps')
         @login_required
         def get(self):
-            admin_token = get_x_auth_token(KEYROCK_ADMIN_USERNAME, KEYROCK_ADMIN_PASSWORD)
+            admin_token = get_x_auth_token(APP_KEYROCK_USERNAME, APP_KEYROCK_PASSWORD)
             headers = {'X-Auth-token': admin_token}
-            keyrock_apps_url = f"{KEYROCK_BASE_URL}/v1/applications" 
+            keyrock_apps_url = KEYROCK_APPLICATION_URL_1
             response = requests.get(keyrock_apps_url, headers=headers)
             if response.status_code == 200:
                 try:

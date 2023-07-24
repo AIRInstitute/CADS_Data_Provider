@@ -1,7 +1,7 @@
 from flask import redirect
 from flask_login import LoginManager
 from app.models import User
-from app.config import KEYROCK_ADMIN_PASSWORD, KEYROCK_ADMIN_USERNAME, KEYROCK_BASE_URL
+from app.config import APP_KEYROCK_PASSWORD, APP_KEYROCK_USERNAME, KEYROCK_BASE_URL, KEYROCK_USERS_URL
 from app.utils import get_x_auth_token
 import requests
 
@@ -20,9 +20,9 @@ def load_user(user_id):
             User: The User object if the user is found.
             None: If the user is not found.
     """
-    admin_token = get_x_auth_token(KEYROCK_ADMIN_USERNAME, KEYROCK_ADMIN_PASSWORD)
+    admin_token = get_x_auth_token(APP_KEYROCK_USERNAME, APP_KEYROCK_PASSWORD)
     headers = {'X-Auth-token': f'{admin_token}'}
-    user_info_url = f"{KEYROCK_BASE_URL}/v1/users/{user_id}" 
+    user_info_url = f"{KEYROCK_USERS_URL}/{user_id}" 
     response = requests.get(user_info_url, headers=headers)
     if response.status_code in(200, 201):
         user_data = response.json()["user"]
