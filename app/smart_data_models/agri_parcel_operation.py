@@ -231,3 +231,12 @@ class AgriParcelOperation(ModelBase):
         }
 
         return agri_parcel_operation_data
+
+
+    def validate_smart_data_model(data):
+        required_fields = ['dateCreated', 'dateModified', 'hasAgriParcel', 'operationType', 'description', 'result', 'plannedStartAt',  'plannedEndAt' , 'status', 'startedAt', 'endedAt', 'reportedAt', 'quantity', 'dieselFuelConsumption', 'gasolineFuelConsumption']
+        for field in required_fields:
+            print(field)
+            if field not in data:
+                return False, f'Required "{field}" does not exist'
+        return True, ''

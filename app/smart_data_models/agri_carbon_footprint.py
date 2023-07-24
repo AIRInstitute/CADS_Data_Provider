@@ -65,7 +65,7 @@ class AgriCarbonFootPrint(ModelBase):
                 "type": "Relationship",
                 "object": self.has_agri_yield
             },
-            "carbonFootprintValue": {
+            "carbonFootprint": {
                 "type": "Property",
                 "value": {
                     "value": self.carbon_footprint_value,
@@ -90,3 +90,12 @@ class AgriCarbonFootPrint(ModelBase):
             }
         }
         return agri_carbon_footprint_data
+
+
+    def validate_smart_data_model(data):
+            required_fields = ['carbonFootprint', 'estimationStartAt', 'estimationEndAt']
+            for field in required_fields:
+                print(field)
+                if field not in data:
+                    return False, f'Required "{field}" does not exist'
+            return True, ''

@@ -1,7 +1,7 @@
 from json import loads
 import logging
 from flask import Blueprint, request, jsonify
-from app.config import AUTHORIZATIONS
+from app.config import SWAGGER_AUTHORIZATIONS
 from app.smart_data_models.agri_carbon_footprint import AgriCarbonFootPrint
 from app.smart_data_models.agri_crop import AgriCrop
 from app.smart_data_models.agri_farm import AgriFarm
@@ -12,13 +12,13 @@ from app.smart_data_models.agri_parcel_record import AgriParcelRecord
 from app.smart_data_models.agri_soil import AgriSoil
 from app.smart_data_models.agri_soil_state import AgriSoilState
 from app.smart_data_models.agri_yield import AgriYield
-from app.utils import api_key_required, send_to_context_broker
+from app.utils import api_key_required, send_to_kong
 from flask_restx import Namespace, Resource, fields
 from app import RelationshipField
 
 smartdata_blueprint = Blueprint("smart_data", __name__)
 
-ns_smart_data_models = Namespace('smart_data_models', description='Smart Data Models operations', authorizations=AUTHORIZATIONS, security='Bearer Auth')
+ns_smart_data_models = Namespace('smart_data_models', description='Smart Data Models operations', authorizations=SWAGGER_AUTHORIZATIONS, security='Bearer Auth')
 
 def get_namespaces():
     return [ns_smart_data_models] 
@@ -61,99 +61,108 @@ agri_farm_model = ns_smart_data_models.model('AgriFarm', {
 @ns_smart_data_models.route('/agri-farm')
 class AgriFarmResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_farm_model, validate=True)
+    @ns_smart_data_models.expect(agri_farm_model, validate=False)
     @ns_smart_data_models.response(201, 'AgriFarm successfully created.')
     def post(self):
         farm_data = request.get_json()
-        name = farm_data.get('name')
-        location_str = farm_data.get('location')
-        type_location = farm_data.get('type_location')
-        address_locality = farm_data.get('address_locality')
-        address_country = farm_data.get('address_country')
-        address_street = farm_data.get('address_street')
-        contact_point_telephone = farm_data.get('contact_point_telephone')
-        contact_point_email = farm_data.get('contact_point_email')
-        has_building_str = farm_data.get('has_building')
-        has_agri_parcel_str = farm_data.get('has_agri_parcel')
-        see_also_str = farm_data.get('see_also')
-        land_location_str = farm_data.get('land_location')
-        land_location_type = farm_data.get('land_location_type')
 
-        error_messages = []
-        if not name:
-            logging.info("name")
-            error_messages.append("Name is missing")
-        if not location_str:
-            logging.info("location")
-            error_messages.append("Location is missing")
-        if not type_location:
-            logging.info("type location")
-            error_messages.append("Location type is missing")
-        if not address_locality:
-            logging.info("address_locality")
-            error_messages.append("Address (locality) is missing")
-        if not address_country:
-            logging.info("address_country")
-            error_messages.append("Address (country) is missing")
-        if not address_street:
-            logging.info("address_street")
-            error_messages.append("Address (street) is missing")
-        if not contact_point_telephone:
-            logging.info("contact_point_telephone")
-            error_messages.append("Contact Point (telephone) is missing")
-        if not contact_point_email:
-            logging.info("contact_point_email")
-            error_messages.append("Contact Point (email) is missing")
-        if not has_agri_parcel_str:
-            logging.info("has_agri_parcel")
-            error_messages.append("Has agri parcel is missing")
-        if error_messages:
-            return jsonify({"errors": error_messages}), 400
-        related_source_str = farm_data.get('related_source')
-        related_source = related_source_str.split(',') if related_source_str else []
+        is_smart_data_model = 'id' in farm_data and 'type' in farm_data
+        if is_smart_data_model:
+            # Si ya está en formato Smart Data Model, entonces puedes pasar los datos directamente.
+            smart_data_model = farm_data
+            is_valid, error_message = AgriFarm.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400   
+        else:
+            name = farm_data.get('name')
+            location_str = farm_data.get('location')
+            type_location = farm_data.get('type_location')
+            address_locality = farm_data.get('address_locality')
+            address_country = farm_data.get('address_country')
+            address_street = farm_data.get('address_street')
+            contact_point_telephone = farm_data.get('contact_point_telephone')
+            contact_point_email = farm_data.get('contact_point_email')
+            has_building_str = farm_data.get('has_building')
+            has_agri_parcel_str = farm_data.get('has_agri_parcel')
+            see_also_str = farm_data.get('see_also')
+            land_location_str = farm_data.get('land_location')
+            land_location_type = farm_data.get('land_location_type')
 
-        if ';' in location_str:
-            location = [list(map(float, pair.split(','))) for pair in location_str.split(';')]
-        else:
-            location = list(map(float, location_str.split(',')))
-        location = {'coordinates': location}  
-        has_building = has_building_str.split(',') if has_building_str else []
-        has_agri_parcel = has_agri_parcel_str.split(',') if has_agri_parcel_str else []
-        see_also = see_also_str.split(',') if see_also_str else []
-        land_location = [list(map(float, pair.split(','))) for pair in land_location_str.split(';')] if land_location_str else []
-        if ';' in land_location_str:
-            land_location = [list(map(float, pair.split(','))) for pair in land_location_str.split(';')]
-        else:
-            land_location = list(map(float, land_location_str.split(',')))
-        land_location = {'coordinates': land_location} 
-        date_created = farm_data.get('date_created')
-        date_modified = farm_data.get('date_modified')
-        description = farm_data.get('description')
-        owned_by = farm_data.get('owned_by')
-        has_building = farm_data.get('has_building')
-        new_farm_data = AgriFarm(
-            name=name,
-            location= location,
-            location_type = type_location,
-            address_locality=address_locality,
-            address_country=address_country,
-            address_street=address_street,
-            contact_point_email=contact_point_email,
-            contact_point_telephone=contact_point_telephone,
-            has_agri_parcel=has_agri_parcel,
-            date_created=date_created,
-            date_modified=date_modified,
-            description=description,
-            related_source=related_source,
-            see_also=see_also,
-            land_location=land_location,
-            land_location_type=land_location_type,
-            owned_by=owned_by,
-            has_building=has_building
-        )
-        
-        smart_data_model = new_farm_data.to_smart_data_model()
-        send_to_context_broker("AgriFarm", smart_data_model)
+            error_messages = []
+            if not name:
+                logging.info("name")
+                error_messages.append("Name is missing")
+            if not location_str:
+                logging.info("location")
+                error_messages.append("Location is missing")
+            if not type_location:
+                logging.info("type location")
+                error_messages.append("Location type is missing")
+            if not address_locality:
+                logging.info("address_locality")
+                error_messages.append("Address (locality) is missing")
+            if not address_country:
+                logging.info("address_country")
+                error_messages.append("Address (country) is missing")
+            if not address_street:
+                logging.info("address_street")
+                error_messages.append("Address (street) is missing")
+            if not contact_point_telephone:
+                logging.info("contact_point_telephone")
+                error_messages.append("Contact Point (telephone) is missing")
+            if not contact_point_email:
+                logging.info("contact_point_email")
+                error_messages.append("Contact Point (email) is missing")
+            if not has_agri_parcel_str:
+                logging.info("has_agri_parcel")
+                error_messages.append("Has agri parcel is missing")
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+            related_source_str = farm_data.get('related_source')
+            related_source = related_source_str.split(',') if related_source_str else []
+
+            if ';' in location_str:
+                location = [list(map(float, pair.split(','))) for pair in location_str.split(';')]
+            else:
+                location = list(map(float, location_str.split(',')))
+            location = {'coordinates': location}  
+            has_building = has_building_str.split(',') if has_building_str else []
+            has_agri_parcel = has_agri_parcel_str.split(',') if has_agri_parcel_str else []
+            see_also = see_also_str.split(',') if see_also_str else []
+            land_location = [list(map(float, pair.split(','))) for pair in land_location_str.split(';')] if land_location_str else []
+            if ';' in land_location_str:
+                land_location = [list(map(float, pair.split(','))) for pair in land_location_str.split(';')]
+            else:
+                land_location = list(map(float, land_location_str.split(',')))
+            land_location = {'coordinates': land_location} 
+            date_created = farm_data.get('date_created')
+            date_modified = farm_data.get('date_modified')
+            description = farm_data.get('description')
+            owned_by = farm_data.get('owned_by')
+            has_building = farm_data.get('has_building')
+            new_farm_data = AgriFarm(
+                name=name,
+                location= location,
+                location_type = type_location,
+                address_locality=address_locality,
+                address_country=address_country,
+                address_street=address_street,
+                contact_point_email=contact_point_email,
+                contact_point_telephone=contact_point_telephone,
+                has_agri_parcel=has_agri_parcel,
+                date_created=date_created,
+                date_modified=date_modified,
+                description=description,
+                related_source=related_source,
+                see_also=see_also,
+                land_location=land_location,
+                land_location_type=land_location_type,
+                owned_by=owned_by,
+                has_building=has_building
+            )
+            smart_data_model = new_farm_data.to_smart_data_model()
+
+        send_to_kong("AgriFarm", smart_data_model)
         return smart_data_model, 201
 
 season_model = ns_smart_data_models.model('Season', {
@@ -183,68 +192,75 @@ agri_crop_model = ns_smart_data_models.model('AgriCrop', {
 @ns_smart_data_models.route('/agri_crop')
 class AgriCropResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_crop_model, validate=True)
+    @ns_smart_data_models.expect(agri_crop_model, validate=False)
     @ns_smart_data_models.response(201, 'AgriCrop successfully created.')
     def post(self):
         crop_data = request.get_json()
+        is_smart_data_model = 'id' in crop_data and 'type' in crop_data
+        if is_smart_data_model:
+            smart_data_model = crop_data
+            is_valid, error_message = AgriCrop.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
+        else:
+            name = crop_data.get('name')
+            has_agri_soil_str = crop_data.get('has_agri_soil')
+            planting_from_str = crop_data.get('planting_from')
 
-        name = crop_data.get('name')
-        has_agri_soil_str = crop_data.get('has_agri_soil')
-        planting_from_str = crop_data.get('planting_from')
+            error_messages = []
+            if not name:
+                logging.append("Name")
+                error_messages.append("Name is missing")
+            if not has_agri_soil_str:
+                logging.append("has_agri_soil")
+                error_messages.append("Has agri soil is missing")
+            if not planting_from_str:
+                logging.append("planting_from")
+                error_messages.append("Planting from is missing")
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+            
+            has_agri_soil = has_agri_soil_str.split(',') if has_agri_soil_str else []
+            planting_from = loads(planting_from_str) if planting_from_str else []
 
-        error_messages = []
-        if not name:
-            logging.append("Name")
-            error_messages.append("Name is missing")
-        if not has_agri_soil_str:
-            logging.append("has_agri_soil")
-            error_messages.append("Has agri soil is missing")
-        if not planting_from_str:
-            logging.append("planting_from")
-            error_messages.append("Planting from is missing")
-        if error_messages:
-            return jsonify({"errors": error_messages}), 400
-        
-        has_agri_soil = has_agri_soil_str.split(',') if has_agri_soil_str else []
-        planting_from = loads(planting_from_str) if planting_from_str else []
+            alternate_name = crop_data.get('alternate_name')
+            agro_voc_concept = crop_data.get('agro_voc_concept')
+            description = crop_data.get('description')
+            date_created = crop_data.get('date_created')
+            date_modified = crop_data.get('date_modified')
+            see_also = crop_data.get('see_also')
+            related_source = crop_data.get('related_source')
+            has_agri_fertiliser_str = crop_data.get('has_agri_fertiliser')
+            has_agri_fertiliser = has_agri_fertiliser_str.split(',') if has_agri_fertiliser_str else []
 
-        alternate_name = crop_data.get('alternate_name')
-        agro_voc_concept = crop_data.get('agro_voc_concept')
-        description = crop_data.get('description')
-        date_created = crop_data.get('date_created')
-        date_modified = crop_data.get('date_modified')
-        see_also = crop_data.get('see_also')
-        related_source = crop_data.get('related_source')
-        has_agri_fertiliser_str = crop_data.get('has_agri_fertiliser')
-        has_agri_fertiliser = has_agri_fertiliser_str.split(',') if has_agri_fertiliser_str else []
+            has_agri_pest_str = crop_data.get('has_agri_pest')
+            has_agri_pest = has_agri_pest_str.split(',') if has_agri_pest_str else []
 
-        has_agri_pest_str = crop_data.get('has_agri_pest')
-        has_agri_pest = has_agri_pest_str.split(',') if has_agri_pest_str else []
+            harvesting_interval_str = crop_data.get('harvesting_interval')
+            harvesting_interval = loads(harvesting_interval_str) if harvesting_interval_str else []
 
-        harvesting_interval_str = crop_data.get('harvesting_interval')
-        harvesting_interval = loads(harvesting_interval_str) if harvesting_interval_str else []
+            watering_frequency = crop_data.get('watering_frequency')
 
-        watering_frequency = crop_data.get('watering_frequency')
+            new_crop = AgriCrop(
+                name=name,
+                alternate_name=alternate_name,
+                agro_voc_concept=agro_voc_concept,
+                description=description,
+                date_created=date_created,
+                date_modified=date_modified,
+                see_also=see_also,
+                related_source=related_source,
+                has_agri_soil=has_agri_soil,
+                has_agri_fertiliser=has_agri_fertiliser,
+                has_agri_pest=has_agri_pest,
+                planting_from=planting_from,
+                harvesting_interval=harvesting_interval,
+                watering_frequency=watering_frequency
+            )
+            
+            smart_data_model = new_crop.to_smart_data_model()
 
-        new_crop = AgriCrop(
-            name=name,
-            alternate_name=alternate_name,
-            agro_voc_concept=agro_voc_concept,
-            description=description,
-            date_created=date_created,
-            date_modified=date_modified,
-            see_also=see_also,
-            related_source=related_source,
-            has_agri_soil=has_agri_soil,
-            has_agri_fertiliser=has_agri_fertiliser,
-            has_agri_pest=has_agri_pest,
-            planting_from=planting_from,
-            harvesting_interval=harvesting_interval,
-            watering_frequency=watering_frequency
-        )
-        
-        smart_data_model = new_crop.to_smart_data_model()
-        send_to_context_broker("AgriCrop", smart_data_model)
+        send_to_kong("AgriCrop", smart_data_model)
         return smart_data_model, 201
     
 
@@ -271,74 +287,81 @@ agri_greenhouse_model = ns_smart_data_models.model('AgriGreenHouse', {
 @ns_smart_data_models.route('/agri_green_house')
 class AgriGreenHouseResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_greenhouse_model, validate=True)
+    @ns_smart_data_models.expect(agri_greenhouse_model, validate=False)
     @ns_smart_data_models.response(201, 'AgriGreenHouse successfully created.')
     def post(self):
         greenhouse_data  = request.get_json()
+        is_smart_data_model = 'id' in greenhouse_data and 'type' in greenhouse_data
+        if is_smart_data_model:
+            smart_data_model = greenhouse_data
+            is_valid, error_message = AgriGreenHouse.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
+        else:
+            relative_humidity = greenhouse_data.get('relative_humidity')
+            co2 = greenhouse_data.get('co2')
+            error_messages = []
 
-        relative_humidity = greenhouse_data.get('relative_humidity')
-        co2 = greenhouse_data.get('co2')
-        error_messages = []
+            if not relative_humidity:
+                logging.info("relative_humidity")
+                error_messages.append("Relative humidity is missing")
+            if not co2:
+                logging.info("co2")
+                error_messages.append("CO2 is missing")
 
-        if not relative_humidity:
-            logging.info("relative_humidity")
-            error_messages.append("Relative humidity is missing")
-        if not co2:
-            logging.info("co2")
-            error_messages.append("CO2 is missing")
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+            
+            date_created = greenhouse_data.get('date_created')
+            date_modified = greenhouse_data.get('date_modified')
+            owned_by = greenhouse_data.get('owned_by')
+            belongs_to = greenhouse_data.get('belongs_to')
+            has_agri_parcel_parent_str = greenhouse_data.get('has_agri_parcel_parent')
+            has_agri_parcel_parent =  has_agri_parcel_parent_str.split(',') if has_agri_parcel_parent_str else []
+            has_weather_observed_str = greenhouse_data.get('has_weather_observed')
+            has_weather_observed =  has_weather_observed_str.split(',') if has_weather_observed_str else []
+            leaf_temperature = greenhouse_data.get('leaf_temperature')
+            daily_light = greenhouse_data.get('daily_light')
+            drain_flow = greenhouse_data.get('drain_flow')
+            drain_flow_max_value = greenhouse_data.get('drain_flow_max_value')
+            drain_flow_min_value = greenhouse_data.get('drain_flow_min_value')
 
-        if error_messages:
-            return jsonify({"errors": error_messages}), 400
-        
-        date_created = greenhouse_data.get('date_created')
-        date_modified = greenhouse_data.get('date_modified')
-        owned_by = greenhouse_data.get('owned_by')
-        belongs_to = greenhouse_data.get('belongs_to')
-        has_agri_parcel_parent_str = greenhouse_data.get('has_agri_parcel_parent')
-        has_agri_parcel_parent =  has_agri_parcel_parent_str.split(',') if has_agri_parcel_parent_str else []
-        has_weather_observed_str = greenhouse_data.get('has_weather_observed')
-        has_weather_observed =  has_weather_observed_str.split(',') if has_weather_observed_str else []
-        leaf_temperature = greenhouse_data.get('leaf_temperature')
-        daily_light = greenhouse_data.get('daily_light')
-        drain_flow = greenhouse_data.get('drain_flow')
-        drain_flow_max_value = greenhouse_data.get('drain_flow_max_value')
-        drain_flow_min_value = greenhouse_data.get('drain_flow_min_value')
+            related_source_str = greenhouse_data.get('related_source')
+            related_source = related_source_str.split(',') if related_source_str else []
+            see_also_str = greenhouse_data.get('see_also')
+            see_also =  see_also_str.split(',') if see_also_str else []
+            has_agri_parcel_children_str = greenhouse_data.get('has_agri_parcel_children')
+            has_agri_parcel_children =  has_agri_parcel_children_str.split(',') if has_agri_parcel_children_str else []
+            has_water_quality_observed_str = greenhouse_data.get('has_water_quality_observed')
+            has_water_quality_observed = has_water_quality_observed_str.split(',') if has_water_quality_observed_str else []
+            has_device_str = greenhouse_data.get('has_device')
+            has_device =  has_device_str.split(',') if has_device_str else []
+            
 
-        related_source_str = greenhouse_data.get('related_source')
-        related_source = related_source_str.split(',') if related_source_str else []
-        see_also_str = greenhouse_data.get('see_also')
-        see_also =  see_also_str.split(',') if see_also_str else []
-        has_agri_parcel_children_str = greenhouse_data.get('has_agri_parcel_children')
-        has_agri_parcel_children =  has_agri_parcel_children_str.split(',') if has_agri_parcel_children_str else []
-        has_water_quality_observed_str = greenhouse_data.get('has_water_quality_observed')
-        has_water_quality_observed = has_water_quality_observed_str.split(',') if has_water_quality_observed_str else []
-        has_device_str = greenhouse_data.get('has_device')
-        has_device =  has_device_str.split(',') if has_device_str else []
-        
+            new_greenhouse = AgriGreenHouse(
+                date_created=date_created,
+                date_modified=date_modified,
+                owned_by=owned_by,
+                related_source=related_source,
+                see_also=see_also,
+                belongs_to=belongs_to,
+                has_agri_parcel_parent=has_agri_parcel_parent,
+                has_agri_parcel_children=has_agri_parcel_children,
+                has_weather_observed=has_weather_observed,
+                has_water_quality_observed=has_water_quality_observed,
+                relative_humidity=relative_humidity,
+                leaf_temperature=leaf_temperature,
+                co2=co2,
+                daily_light=daily_light,
+                drain_flow=drain_flow,
+                drain_flow_max_value=drain_flow_max_value,
+                drain_flow_min_value=drain_flow_min_value,
+                has_device=has_device
+            )
+            
+            smart_data_model = new_greenhouse.to_smart_data_model()
 
-        new_greenhouse = AgriGreenHouse(
-            date_created=date_created,
-            date_modified=date_modified,
-            owned_by=owned_by,
-            related_source=related_source,
-            see_also=see_also,
-            belongs_to=belongs_to,
-            has_agri_parcel_parent=has_agri_parcel_parent,
-            has_agri_parcel_children=has_agri_parcel_children,
-            has_weather_observed=has_weather_observed,
-            has_water_quality_observed=has_water_quality_observed,
-            relative_humidity=relative_humidity,
-            leaf_temperature=leaf_temperature,
-            co2=co2,
-            daily_light=daily_light,
-            drain_flow=drain_flow,
-            drain_flow_max_value=drain_flow_max_value,
-            drain_flow_min_value=drain_flow_min_value,
-            has_device=has_device
-        )
-        
-        smart_data_model = new_greenhouse.to_smart_data_model()
-        send_to_context_broker("AgriGreenHouse", smart_data_model)
+        send_to_kong("AgriGreenHouse", smart_data_model)
         return smart_data_model, 201
 
 
@@ -370,93 +393,100 @@ agri_parcel_model = ns_smart_data_models.model('AgriParcel', {
 @ns_smart_data_models.route('/agri_parcel')
 class AgriParcelResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_parcel_model, validate=True)
+    @ns_smart_data_models.expect(agri_parcel_model, validate=False)
     @ns_smart_data_models.response(201, 'AgriParcel successfully created.')
     def post(self):
         parcel_data = request.get_json()
-
-        location_str = parcel_data.get('location')
-        location_type = parcel_data.get('location_type')
-        area = parcel_data.get('area')
-        description = parcel_data.get('description')
-        category = parcel_data.get('category')
-        belongs_to = parcel_data.get('belongs_to')
-        has_agri_soil = parcel_data.get('has_agri_soil')
-        
-        error_messages = []
-        if not location_str:
-            error_messages.append("Location is missing")
-        if not location_type:
-            error_messages.append("Location type is missing")
-        if not area:
-            error_messages.append("Area is missing")
-        if not description:
-            error_messages.append("Description is missing")
-        if not category:
-            error_messages.append("Category is missing")
-        if not belongs_to:
-            error_messages.append("Belongs to is missing")
-        if not has_agri_soil:
-            error_messages.append("Has agri soil is missing")
-        if error_messages:
-            return jsonify({"errors": error_messages}), 400
-        
-        if ';' in location_str:
-            location = [list(map(float, pair.split(','))) for pair in location_str.split(';')]
+        is_smart_data_model = 'id' in parcel_data and 'type' in parcel_data
+        if is_smart_data_model:
+            smart_data_model = parcel_data
+            is_valid, error_message = AgriParcel.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
         else:
-            location = list(map(float, location_str.split(',')))
-        location = {'coordinates': location}  
-        
-        date_created = parcel_data.get('date_created')
-        date_modified = parcel_data.get('date_modified')
-        has_agri_parcel_parent = parcel_data.get('has_agri_parcel_parent')
-        soil_texture_type = parcel_data.get('soil_texture_type')
-        related_source_str = parcel_data.get('related_source')
-        related_source = related_source_str.split(',') if related_source_str else None
+            location_str = parcel_data.get('location')
+            location_type = parcel_data.get('location_type')
+            area = parcel_data.get('area')
+            description = parcel_data.get('description')
+            category = parcel_data.get('category')
+            belongs_to = parcel_data.get('belongs_to')
+            has_agri_soil = parcel_data.get('has_agri_soil')
+            
+            error_messages = []
+            if not location_str:
+                error_messages.append("Location is missing")
+            if not location_type:
+                error_messages.append("Location type is missing")
+            if not area:
+                error_messages.append("Area is missing")
+            if not description:
+                error_messages.append("Description is missing")
+            if not category:
+                error_messages.append("Category is missing")
+            if not belongs_to:
+                error_messages.append("Belongs to is missing")
+            if not has_agri_soil:
+                error_messages.append("Has agri soil is missing")
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+            
+            if ';' in location_str:
+                location = [list(map(float, pair.split(','))) for pair in location_str.split(';')]
+            else:
+                location = list(map(float, location_str.split(',')))
+            location = {'coordinates': location}  
+            
+            date_created = parcel_data.get('date_created')
+            date_modified = parcel_data.get('date_modified')
+            has_agri_parcel_parent = parcel_data.get('has_agri_parcel_parent')
+            soil_texture_type = parcel_data.get('soil_texture_type')
+            related_source_str = parcel_data.get('related_source')
+            related_source = related_source_str.split(',') if related_source_str else None
 
 
-        see_also_str = parcel_data.get('see_also')
-        see_also = see_also_str.split(',') if see_also_str else None
-        
-        owned_by = parcel_data.get('owned_by')
-        has_agri_parcel_children_str = parcel_data.get('has_agri_parcel_children')
-        has_agri_parcel_children = has_agri_parcel_children_str.split(',') if has_agri_parcel_children_str else None
+            see_also_str = parcel_data.get('see_also')
+            see_also = see_also_str.split(',') if see_also_str else None
+            
+            owned_by = parcel_data.get('owned_by')
+            has_agri_parcel_children_str = parcel_data.get('has_agri_parcel_children')
+            has_agri_parcel_children = has_agri_parcel_children_str.split(',') if has_agri_parcel_children_str else None
 
-        has_agri_crop = parcel_data.get('has_agri_crop')
-        has_air_quality_observed = parcel_data.get('has_air_quality_observed')
-        crop_status = parcel_data.get('crop_status')
-        last_planted_at = parcel_data.get('last_planted_at')
-        has_device_str = parcel_data.get('has_device')
-        has_device = has_device_str.split(',') if has_device_str else None
+            has_agri_crop = parcel_data.get('has_agri_crop')
+            has_air_quality_observed = parcel_data.get('has_air_quality_observed')
+            crop_status = parcel_data.get('crop_status')
+            last_planted_at = parcel_data.get('last_planted_at')
+            has_device_str = parcel_data.get('has_device')
+            has_device = has_device_str.split(',') if has_device_str else None
 
-        irrigation_system_type = parcel_data.get('irrigation_system_type')
+            irrigation_system_type = parcel_data.get('irrigation_system_type')
 
-        new_parcel = AgriParcel(
-            date_created=date_created,
-            date_modified=date_modified,
-            location= location,
-            type_location= location_type,
-            area=area,
-            description=description,
-            category=category,
-            belongs_to=belongs_to,
-            has_agri_parcel_parent=has_agri_parcel_parent,
-            has_agri_soil=has_agri_soil,
-            soil_texture_type=soil_texture_type,
-            related_source=related_source,
-            see_also=see_also,
-            owned_by=owned_by,
-            has_agri_parcel_children=has_agri_parcel_children,
-            has_agri_crop=has_agri_crop,
-            has_air_quality_observed=has_air_quality_observed,
-            crop_status=crop_status,
-            last_planted_at=last_planted_at,
-            has_device=has_device,
-            irrigation_system_type=irrigation_system_type
-        )
-        
-        smart_data_model = new_parcel.to_smart_data_model()
-        send_to_context_broker("AgriParcel", smart_data_model)
+            new_parcel = AgriParcel(
+                date_created=date_created,
+                date_modified=date_modified,
+                location= location,
+                type_location= location_type,
+                area=area,
+                description=description,
+                category=category,
+                belongs_to=belongs_to,
+                has_agri_parcel_parent=has_agri_parcel_parent,
+                has_agri_soil=has_agri_soil,
+                soil_texture_type=soil_texture_type,
+                related_source=related_source,
+                see_also=see_also,
+                owned_by=owned_by,
+                has_agri_parcel_children=has_agri_parcel_children,
+                has_agri_crop=has_agri_crop,
+                has_air_quality_observed=has_air_quality_observed,
+                crop_status=crop_status,
+                last_planted_at=last_planted_at,
+                has_device=has_device,
+                irrigation_system_type=irrigation_system_type
+            )
+            
+            smart_data_model = new_parcel.to_smart_data_model()
+
+        send_to_kong("AgriParcel", smart_data_model)
         return smart_data_model, 201
 
 agri_parcel_operation_model = ns_smart_data_models.model('AgriParcelOperation', {
@@ -496,122 +526,127 @@ agri_parcel_operation_model = ns_smart_data_models.model('AgriParcelOperation', 
 @ns_smart_data_models.route('/agri_parcel_operation')
 class AgriParcelOperationResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_parcel_operation_model, validate=True)
+    @ns_smart_data_models.expect(agri_parcel_operation_model, validate=False)
     @ns_smart_data_models.response(201, 'AgriParcelOperation successfully created.')
     def post(self):
         operation_data = request.get_json()
+        is_smart_data_model = 'id' in operation_data and 'type' in operation_data
+        if is_smart_data_model:
+            smart_data_model = operation_data
+            is_valid, error_message = AgriParcelOperation.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
+        else:
+            has_agri_parcel = operation_data.get('has_agri_parcel')
+            operation_type = operation_data.get('operation_type')
+            description = operation_data.get('description')
+            result = operation_data.get('result')
+            planned_start_at = operation_data.get('planned_start_at')
+            planned_end_at = operation_data.get('planned_end_at')
+            status = operation_data.get('status')
+            started_at = operation_data.get('started_at')
+            ended_at = operation_data.get('ended_at')
+            reported_at = operation_data.get('reported_at')
+            quantity = operation_data.get('quantity')
+            diesel_fuel_consumption = operation_data.get('diesel_fuel_consumption')
+            gasoline_fuel_consumption = operation_data.get('gasoline_fuel_consumption')
+            diesel_fuel_consumption_max_value= operation_data.get('diesel_fuel_consumption_max_value')
+            diesel_fuel_consumption_min_value = operation_data.get('diesel_fuel_consumption_max_value')
+            diesel_fuel_consumption_unit_text = operation_data.get('diesel_fuel_consumption_unit_text')
+            gasoline_fuel_consumption_max_value = operation_data.get('gasoline_fuel_consumption_max_value')
+            gasoline_fuel_consumption_min_value = operation_data.get('gasoline_fuel_consumption_min_value')
+            gasoline_fuel_consumption_unit_text = operation_data.get('gasoline_fuel_consumption_unit_text')
 
-        has_agri_parcel = operation_data.get('has_agri_parcel')
-        operation_type = operation_data.get('operation_type')
-        description = operation_data.get('description')
-        result = operation_data.get('result')
-        planned_start_at = operation_data.get('planned_start_at')
-        planned_end_at = operation_data.get('planned_end_at')
-        status = operation_data.get('status')
-        started_at = operation_data.get('started_at')
-        ended_at = operation_data.get('ended_at')
-        reported_at = operation_data.get('reported_at')
-        quantity = operation_data.get('quantity')
-        diesel_fuel_consumption = operation_data.get('diesel_fuel_consumption')
-        gasoline_fuel_consumption = operation_data.get('gasoline_fuel_consumption')
-        diesel_fuel_consumption_max_value= operation_data.get('diesel_fuel_consumption_max_value')
-        diesel_fuel_consumption_min_value = operation_data.get('diesel_fuel_consumption_max_value')
-        diesel_fuel_consumption_unit_text = operation_data.get('diesel_fuel_consumption_unit_text')
-        gasoline_fuel_consumption_max_value = operation_data.get('gasoline_fuel_consumption_max_value')
-        gasoline_fuel_consumption_min_value = operation_data.get('gasoline_fuel_consumption_min_value')
-        gasoline_fuel_consumption_unit_text = operation_data.get('gasoline_fuel_consumption_unit_text')
+            
+            error_messages = []
+            if not has_agri_parcel:
+                error_messages.append("Has agri parcel is missing")
+            if not operation_type:
+                error_messages.append("Operation type is missing")
+            if not description:
+                error_messages.append("Description is missing")
+            if not result:
+                error_messages.append("Result is missing")
+            if not planned_start_at:
+                error_messages.append("Planned start at is missing")
+            if not planned_end_at:
+                error_messages.append("Planned end at is missing")
+            if not status:
+                error_messages.append("Status is missing")
+            if not started_at:
+                error_messages.append("Started at is missing")
+            if not ended_at:
+                error_messages.append("Ended at is missing")
+            if not reported_at:
+                error_messages.append("Reported at is missing")
+            if not quantity:
+                error_messages.append("Quantity is missing")
+            if not diesel_fuel_consumption:
+                error_messages.append("Diesel fuel consumption is missing")
+            if not gasoline_fuel_consumption:
+                error_messages.append("Gasoline fuel consumption is missing")
+            if not diesel_fuel_consumption_max_value:
+                error_messages.append("Diesel Max fuel consumption is missing")
+            if not diesel_fuel_consumption_min_value:
+                error_messages.append("Diesel Min fuel consumption is missing")
+            if not diesel_fuel_consumption_unit_text:
+                error_messages.append("Diesel Unit fuel consumption is missing")
+            if not gasoline_fuel_consumption_max_value:
+                error_messages.append("Gasoline Max fuel consumption is missing")
+            if not gasoline_fuel_consumption_min_value:
+                error_messages.append("Gasoline Min fuel consumption is missing")
+            if not gasoline_fuel_consumption_unit_text:
+                error_messages.append("Gasoline Unit fuel consumption is missing")
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+            date_created = operation_data.get('date_created')
+            date_modified = operation_data.get('date_modified')
+            related_source_str = operation_data.get('related_source')
+            related_source = related_source_str.split(',') if related_source_str else []
+            see_also_str = operation_data.get('see_also')
+            see_also = see_also_str.split(',') if see_also_str else []
+            has_operator = operation_data.get('has_operator')
+            has_agri_product_type = operation_data.get('has_agri_product_type')
+            water_source = operation_data.get('water_source')
+            work_order = operation_data.get('work_order')
+            work_record = operation_data.get('work_record')
+            irrigation_record = operation_data.get('irrigation_record')
 
+            new_operation = AgriParcelOperation(
+                date_created=date_created,
+                date_modified=date_modified,
+                has_agri_parcel=has_agri_parcel,
+                operation_type=operation_type,
+                description=description,
+                result=result,
+                planned_start_at=planned_start_at,
+                planned_end_at=planned_end_at,
+                status=status,
+                started_at=started_at,
+                ended_at=ended_at,
+                reported_at=reported_at,
+                quantity=quantity,
+                related_source=related_source,
+                see_also=see_also,
+                has_operator=has_operator,
+                has_agri_product_type=has_agri_product_type,
+                water_source=water_source,
+                work_order=work_order,
+                work_record=work_record,
+                irrigation_record=irrigation_record,
+                diesel_fuel_consumption=diesel_fuel_consumption,
+                gasoline_fuel_consumption=gasoline_fuel_consumption,
+                diesel_fuel_consumption_max_value=diesel_fuel_consumption_max_value,
+                diesel_fuel_consumption_min_value=diesel_fuel_consumption_min_value,
+                diesel_fuel_consumption_unit_text=diesel_fuel_consumption_unit_text,
+                gasoline_fuel_consumption_max_value=gasoline_fuel_consumption_max_value,
+                gasoline_fuel_consumption_min_value=gasoline_fuel_consumption_min_value,
+                gasoline_fuel_consumption_unit_text=gasoline_fuel_consumption_unit_text
+            )
+            
+            smart_data_model = new_operation.to_smart_data_model()
         
-        error_messages = []
-        if not has_agri_parcel:
-            error_messages.append("Has agri parcel is missing")
-        if not operation_type:
-            error_messages.append("Operation type is missing")
-        if not description:
-            error_messages.append("Description is missing")
-        if not result:
-            error_messages.append("Result is missing")
-        if not planned_start_at:
-            error_messages.append("Planned start at is missing")
-        if not planned_end_at:
-            error_messages.append("Planned end at is missing")
-        if not status:
-            error_messages.append("Status is missing")
-        if not started_at:
-            error_messages.append("Started at is missing")
-        if not ended_at:
-            error_messages.append("Ended at is missing")
-        if not reported_at:
-            error_messages.append("Reported at is missing")
-        if not quantity:
-            error_messages.append("Quantity is missing")
-        if not diesel_fuel_consumption:
-            error_messages.append("Diesel fuel consumption is missing")
-        if not gasoline_fuel_consumption:
-            error_messages.append("Gasoline fuel consumption is missing")
-        if not diesel_fuel_consumption_max_value:
-            error_messages.append("Diesel Max fuel consumption is missing")
-        if not diesel_fuel_consumption_min_value:
-            error_messages.append("Diesel Min fuel consumption is missing")
-        if not diesel_fuel_consumption_unit_text:
-            error_messages.append("Diesel Unit fuel consumption is missing")
-        if not gasoline_fuel_consumption_max_value:
-            error_messages.append("Gasoline Max fuel consumption is missing")
-        if not gasoline_fuel_consumption_min_value:
-            error_messages.append("Gasoline Min fuel consumption is missing")
-        if not gasoline_fuel_consumption_unit_text:
-            error_messages.append("Gasoline Unit fuel consumption is missing")
-        if error_messages:
-            return jsonify({"errors": error_messages}), 400
-        date_created = operation_data.get('date_created')
-        date_modified = operation_data.get('date_modified')
-        related_source_str = operation_data.get('related_source')
-        related_source = related_source_str.split(',') if related_source_str else []
-        see_also_str = operation_data.get('see_also')
-        see_also = see_also_str.split(',') if see_also_str else []
-        has_operator = operation_data.get('has_operator')
-        has_agri_product_type = operation_data.get('has_agri_product_type')
-        water_source = operation_data.get('water_source')
-        work_order = operation_data.get('work_order')
-        work_record = operation_data.get('work_record')
-        irrigation_record = operation_data.get('irrigation_record')
-
-        new_operation = AgriParcelOperation(
-            date_created=date_created,
-            date_modified=date_modified,
-            has_agri_parcel=has_agri_parcel,
-            operation_type=operation_type,
-            description=description,
-            result=result,
-            planned_start_at=planned_start_at,
-            planned_end_at=planned_end_at,
-            status=status,
-            started_at=started_at,
-            ended_at=ended_at,
-            reported_at=reported_at,
-            quantity=quantity,
-            related_source=related_source,
-            see_also=see_also,
-            has_operator=has_operator,
-            has_agri_product_type=has_agri_product_type,
-            water_source=water_source,
-            work_order=work_order,
-            work_record=work_record,
-            irrigation_record=irrigation_record,
-            diesel_fuel_consumption=diesel_fuel_consumption,
-            gasoline_fuel_consumption=gasoline_fuel_consumption,
-            diesel_fuel_consumption_max_value=diesel_fuel_consumption_max_value,
-            diesel_fuel_consumption_min_value=diesel_fuel_consumption_min_value,
-            diesel_fuel_consumption_unit_text=diesel_fuel_consumption_unit_text,
-            gasoline_fuel_consumption_max_value=gasoline_fuel_consumption_max_value,
-            gasoline_fuel_consumption_min_value=gasoline_fuel_consumption_min_value,
-            gasoline_fuel_consumption_unit_text=gasoline_fuel_consumption_unit_text
-           
-
-        )
-        
-        smart_data_model = new_operation.to_smart_data_model()
-        send_to_context_broker("AgriParcelOperation", smart_data_model)
+        send_to_kong("AgriParcelOperation", smart_data_model)
         return smart_data_model, 201
 
 agri_parcel_record_model = ns_smart_data_models.model('AgriParcelRecord', {
@@ -660,157 +695,157 @@ agri_parcel_record_model = ns_smart_data_models.model('AgriParcelRecord', {
     'depth': fields.Float(required=True, description='Relative humidity', example=20.0),
     'depth_unit_code': fields.String(required=False, description='UnitCode of Depth', example='CMT'),
     'timestamp': fields.DateTime(required=False, description='Timestamp', example="2023-05-16T01:20:00Z"),
-
-    
 })
 
 @ns_smart_data_models.doc(security='Bearer Auth')
 @ns_smart_data_models.route('/agri_parcel_record')
 class AgriParcelRecordResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_parcel_record_model, validate=True)
+    @ns_smart_data_models.expect(agri_parcel_record_model, validate=False)
     @ns_smart_data_models.response(201, 'AgriParcelRecord successfully created.')
     def post(self):
         record_data = request.get_json()
-
-        has_agri_parcel = record_data.get('has_agri_parcel')
-        location_str = record_data.get('location')
-        type_location = record_data.get('type_location')
-        soil_temperature = record_data.get('soil_temperature')
-        soil_temperature_unit = record_data.get('soil_temperature_unit')
-        air_temperature = record_data.get('air_temperature')
-        air_temperature_unit = record_data.get('air_temperature_unit')
-        air_temperature_timestamp = record_data.get('air_temperature_timestamp')
-        relative_humidity = record_data.get('relative_humidity')
-        relative_humidity_unit = record_data.get('relative_humidity_unit')
-        relative_humidity_timestamp = record_data.get('relative_humidity_timestamp')
-
-        error_messages = []
-        if not has_agri_parcel:
-            error_messages.append("Has agri parcel is missing")
-        if not location_str:
-            error_messages.append("Location is missing")
-        if not type_location:
-            error_messages.append("Location Type is missing")
-        if not soil_temperature:
-            error_messages.append("Soil temperature is missing")
-        if not soil_temperature_unit:
-            error_messages.append("Soil temperature unit is missing")
-        if not air_temperature:
-            error_messages.append("Air temperature is missing")
-        if not air_temperature_unit:
-            error_messages.append("Air temperature unit is missing")
-        if not air_temperature_timestamp:
-            error_messages.append("Air temperature timestamp is missing")
-        if not relative_humidity:
-            error_messages.append("Relative humidity is missing")
-        if not relative_humidity_unit:
-            error_messages.append("Relative humidity unit is missing")
-        if not relative_humidity_timestamp:
-            error_messages.append("Relative humidity timestamp is missing")
-
-        if error_messages:
-            return jsonify({"errors": error_messages}), 400
-        
-        if ';' in location_str:
-            location = [list(map(float, pair.split(','))) for pair in location_str.split(';')]
+        is_smart_data_model = 'id' in record_data and 'type' in record_data
+        if is_smart_data_model:
+            smart_data_model = record_data
+            is_valid, error_message = AgriParcelRecord.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
         else:
-            location = list(map(float, location_str.split(',')))
-        location = {'coordinates': location}  
+            has_agri_parcel = record_data.get('has_agri_parcel')
+            location_str = record_data.get('location')
+            type_location = record_data.get('type_location')
+            soil_temperature = record_data.get('soil_temperature')
+            soil_temperature_unit = record_data.get('soil_temperature_unit')
+            air_temperature = record_data.get('air_temperature')
+            air_temperature_unit = record_data.get('air_temperature_unit')
+            air_temperature_timestamp = record_data.get('air_temperature_timestamp')
+            relative_humidity = record_data.get('relative_humidity')
+            relative_humidity_unit = record_data.get('relative_humidity_unit')
+            relative_humidity_timestamp = record_data.get('relative_humidity_timestamp')
 
+            error_messages = []
+            if not has_agri_parcel:
+                error_messages.append("Has agri parcel is missing")
+            if not location_str:
+                error_messages.append("Location is missing")
+            if not type_location:
+                error_messages.append("Location Type is missing")
+            if not soil_temperature:
+                error_messages.append("Soil temperature is missing")
+            if not soil_temperature_unit:
+                error_messages.append("Soil temperature unit is missing")
+            if not air_temperature:
+                error_messages.append("Air temperature is missing")
+            if not air_temperature_unit:
+                error_messages.append("Air temperature unit is missing")
+            if not air_temperature_timestamp:
+                error_messages.append("Air temperature timestamp is missing")
+            if not relative_humidity:
+                error_messages.append("Relative humidity is missing")
+            if not relative_humidity_unit:
+                error_messages.append("Relative humidity unit is missing")
+            if not relative_humidity_timestamp:
+                error_messages.append("Relative humidity timestamp is missing")
 
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+            
+            if ';' in location_str:
+                location = [list(map(float, pair.split(','))) for pair in location_str.split(';')]
+            else:
+                location = list(map(float, location_str.split(',')))
+            location = {'coordinates': location} 
 
-        date_created = record_data.get('date_created')
-        date_modified = record_data.get('date_modified')
-        related_source_str = record_data.get('related_source')
-        related_source = related_source_str.split(',') if related_source_str else []
-        see_also_str = record_data.get('see_also')
-        see_also = see_also_str.split(',') if see_also_str else []
-        description = record_data.get('description')
-        soil_moisture_vwc = record_data.get('soil_moisture_vwc')
-        soil_moisture_ec = record_data.get('soil_moisture_ec')
-        soil_salinity = record_data.get('soil_salinity')
-        leaf_wetness = record_data.get('leaf_wetness')
-        leaf_relative_humidity = record_data.get('leaf_relative_humidity')
-        leaf_temperature = record_data.get('leaf_temperature')
-        solar_radiation = record_data.get('solar_radiation')
-        atmospheric_pressure = record_data.get('atmospheric_pressure')
-        has_device_str = record_data.get('has_device')
-        has_device = has_device_str.split(',') if has_device_str else []
-        observed_at = record_data.get('observed_at')
-        soil_salinity_unit = record_data.get('soil_salinity_unit')
-        soil_salinity_timestamp = record_data.get('soil_salinity_timestamp')
-        leaf_wetness_unit = record_data.get('leaf_wetness_unit')
-        leaf_wetness_timestamp = record_data.get('leaf_wetness_timestamp')
-        leaf_temperature_unit = record_data.get('leaf_temperature_unit')
-        leaf_temperature_timestamp = record_data.get('leaf_temperature_timestamp')
-        solar_radiation_unit = record_data.get('solar_radiation_unit')
-        solar_radiation_timestamp = record_data.get('solar_radiation_timestamp')
-        atmospheric_pressure_unit = record_data.get('atmospheric_pressure_unit')
-        atmospheric_pressure_timestamp = record_data.get('atmospheric_pressure_timestamp')
-        soil_moisture_vwc_unit = record_data.get('soil_moisture_vwc_unit')
-        soil_moisture_vwc_timestamp = record_data.get('soil_moisture_vwc_timestamp')
-        soil_moisture_ec_unit = record_data.get('soil_moisture_ec_unit')
-        soil_moisture_ec_timestamp = record_data.get('soil_moisture_ec_timestamp')
-        leaf_relative_humidity_unit = record_data.get('leaf_relative_humidity_unit')
-        leaf_relative_humidity_timestamp = record_data.get('leaf_relative_humidity_timestamp')
-        depth = record_data.get('depth')
-        depth_unit_code = record_data.get('depth_unit_code')
-        timestamp = record_data.get('timestamp')
+            date_created = record_data.get('date_created')
+            date_modified = record_data.get('date_modified')
+            related_source_str = record_data.get('related_source')
+            related_source = related_source_str.split(',') if related_source_str else []
+            see_also_str = record_data.get('see_also')
+            see_also = see_also_str.split(',') if see_also_str else []
+            description = record_data.get('description')
+            soil_moisture_vwc = record_data.get('soil_moisture_vwc')
+            soil_moisture_ec = record_data.get('soil_moisture_ec')
+            soil_salinity = record_data.get('soil_salinity')
+            leaf_wetness = record_data.get('leaf_wetness')
+            leaf_relative_humidity = record_data.get('leaf_relative_humidity')
+            leaf_temperature = record_data.get('leaf_temperature')
+            solar_radiation = record_data.get('solar_radiation')
+            atmospheric_pressure = record_data.get('atmospheric_pressure')
+            has_device_str = record_data.get('has_device')
+            has_device = has_device_str.split(',') if has_device_str else []
+            observed_at = record_data.get('observed_at')
+            soil_salinity_unit = record_data.get('soil_salinity_unit')
+            soil_salinity_timestamp = record_data.get('soil_salinity_timestamp')
+            leaf_wetness_unit = record_data.get('leaf_wetness_unit')
+            leaf_wetness_timestamp = record_data.get('leaf_wetness_timestamp')
+            leaf_temperature_unit = record_data.get('leaf_temperature_unit')
+            leaf_temperature_timestamp = record_data.get('leaf_temperature_timestamp')
+            solar_radiation_unit = record_data.get('solar_radiation_unit')
+            solar_radiation_timestamp = record_data.get('solar_radiation_timestamp')
+            atmospheric_pressure_unit = record_data.get('atmospheric_pressure_unit')
+            atmospheric_pressure_timestamp = record_data.get('atmospheric_pressure_timestamp')
+            soil_moisture_vwc_unit = record_data.get('soil_moisture_vwc_unit')
+            soil_moisture_vwc_timestamp = record_data.get('soil_moisture_vwc_timestamp')
+            soil_moisture_ec_unit = record_data.get('soil_moisture_ec_unit')
+            soil_moisture_ec_timestamp = record_data.get('soil_moisture_ec_timestamp')
+            leaf_relative_humidity_unit = record_data.get('leaf_relative_humidity_unit')
+            leaf_relative_humidity_timestamp = record_data.get('leaf_relative_humidity_timestamp')
+            depth = record_data.get('depth')
+            depth_unit_code = record_data.get('depth_unit_code')
+            timestamp = record_data.get('timestamp')
 
+            new_record = AgriParcelRecord(
+                date_created=date_created,
+                date_modified=date_modified,
+                has_agri_parcel=has_agri_parcel,
+                type_location=type_location,
+                location = location,
+                soil_temperature=soil_temperature,
+                soil_temperature_unit=soil_temperature_unit,
+                air_temperature=air_temperature,
+                air_temperature_unit=air_temperature_unit,
+                air_temperature_timestamp = air_temperature_timestamp,
+                relative_humidity=relative_humidity,
+                relative_humidity_unit=relative_humidity_unit,
+                relative_humidity_timestamp=relative_humidity_timestamp,
+                description=description,
+                related_source=related_source,
+                see_also=see_also,
+                soil_moisture_vwc=soil_moisture_vwc,
+                soil_moisture_ec=soil_moisture_ec,
+                soil_salinity=soil_salinity,
+                leaf_wetness=leaf_wetness,
+                leaf_relative_humidity=leaf_relative_humidity,
+                leaf_temperature=leaf_temperature,
+                solar_radiation=solar_radiation,
+                atmospheric_pressure=atmospheric_pressure,
+                has_device=has_device,
+                observed_at=observed_at,
+                soil_salinity_unit= soil_salinity_unit,
+                soil_salinity_timestamp = soil_salinity_timestamp,
+                leaf_wetness_unit = leaf_wetness_unit,
+                leaf_wetness_timestamp = leaf_wetness_timestamp,
+                leaf_temperature_unit = leaf_temperature_unit,
+                leaf_temperature_timestamp = leaf_temperature_timestamp,
+                solar_radiation_unit = solar_radiation_unit,
+                solar_radiation_timestamp = solar_radiation_timestamp,
+                atmospheric_pressure_unit = atmospheric_pressure_unit,
+                atmospheric_pressure_timestamp = atmospheric_pressure_timestamp,
+                soil_moisture_vwc_unit = soil_moisture_vwc_unit,
+                soil_moisture_vwc_timestamp = soil_moisture_vwc_timestamp,
+                soil_moisture_ec_unit = soil_moisture_ec_unit,
+                soil_moisture_ec_timestamp = soil_moisture_ec_timestamp,
+                leaf_relative_humidity_unit = leaf_relative_humidity_unit,
+                leaf_relative_humidity_timestamp= leaf_relative_humidity_timestamp,
+                depth=depth,
+                depth_unit=depth_unit_code,
+                timestamp=timestamp
+            )
+            
+            smart_data_model = new_record.to_smart_data_model()
 
-        new_record = AgriParcelRecord(
-            date_created=date_created,
-            date_modified=date_modified,
-            has_agri_parcel=has_agri_parcel,
-            type_location=type_location,
-            location = location,
-            soil_temperature=soil_temperature,
-            soil_temperature_unit=soil_temperature_unit,
-            air_temperature=air_temperature,
-            air_temperature_unit=air_temperature_unit,
-            air_temperature_timestamp = air_temperature_timestamp,
-            relative_humidity=relative_humidity,
-            relative_humidity_unit=relative_humidity_unit,
-            relative_humidity_timestamp=relative_humidity_timestamp,
-            description=description,
-            related_source=related_source,
-            see_also=see_also,
-            soil_moisture_vwc=soil_moisture_vwc,
-            soil_moisture_ec=soil_moisture_ec,
-            soil_salinity=soil_salinity,
-            leaf_wetness=leaf_wetness,
-            leaf_relative_humidity=leaf_relative_humidity,
-            leaf_temperature=leaf_temperature,
-            solar_radiation=solar_radiation,
-            atmospheric_pressure=atmospheric_pressure,
-            has_device=has_device,
-            observed_at=observed_at,
-            soil_salinity_unit= soil_salinity_unit,
-            soil_salinity_timestamp = soil_salinity_timestamp,
-            leaf_wetness_unit = leaf_wetness_unit,
-            leaf_wetness_timestamp = leaf_wetness_timestamp,
-            leaf_temperature_unit = leaf_temperature_unit,
-            leaf_temperature_timestamp = leaf_temperature_timestamp,
-            solar_radiation_unit = solar_radiation_unit,
-            solar_radiation_timestamp = solar_radiation_timestamp,
-            atmospheric_pressure_unit = atmospheric_pressure_unit,
-            atmospheric_pressure_timestamp = atmospheric_pressure_timestamp,
-            soil_moisture_vwc_unit = soil_moisture_vwc_unit,
-            soil_moisture_vwc_timestamp = soil_moisture_vwc_timestamp,
-            soil_moisture_ec_unit = soil_moisture_ec_unit,
-            soil_moisture_ec_timestamp = soil_moisture_ec_timestamp,
-            leaf_relative_humidity_unit = leaf_relative_humidity_unit,
-            leaf_relative_humidity_timestamp= leaf_relative_humidity_timestamp,
-            depth=depth,
-            depth_unit=depth_unit_code,
-            timestamp=timestamp
-
-
-        )
-        
-        smart_data_model = new_record.to_smart_data_model()
-        send_to_context_broker("AgriParcelRecord", smart_data_model)
+        send_to_kong("AgriParcelRecord", smart_data_model)
         return smart_data_model, 201
 
 agri_soil_model = ns_smart_data_models.model('AgriSoil', {
@@ -830,42 +865,49 @@ agri_soil_model = ns_smart_data_models.model('AgriSoil', {
 @ns_smart_data_models.route('/agri_soil')
 class AgriSoilResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_soil_model, validate=True)
+    @ns_smart_data_models.expect(agri_soil_model, validate=False)
     @ns_smart_data_models.response(201, 'AgriSoil successfully created.')
     def post(self):
         soil_data = request.get_json()
+        is_smart_data_model = 'id' in soil_data and 'type' in soil_data
+        if is_smart_data_model:
+            smart_data_model = soil_data
+            is_valid, error_message = AgriSoil.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
+        else:
+            name = soil_data.get('name')
 
-        name = soil_data.get('name')
+            error_messages = []
+            if not name:
+                error_messages.append("Name is missing")
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+            date_created = soil_data.get('date_created')
+            date_modified = soil_data.get('date_modified')
+            alternate_name = soil_data.get('alternate_name')
+            description = soil_data.get('description')
+            agro_voc_concept = soil_data.get('agro_voc_concept')
+            see_also = soil_data.get('see_also').split(',') if soil_data.get('see_also') else []
+            related_source = soil_data.get('related_source').split(',') if soil_data.get('related_source') else []
+            has_agri_product_type = soil_data.get('has_agri_product_type').split(',') if soil_data.get('has_agri_product_type') else []
+            
 
-        error_messages = []
-        if not name:
-            error_messages.append("Name is missing")
-        if error_messages:
-            return jsonify({"errors": error_messages}), 400
-        date_created = soil_data.get('date_created')
-        date_modified = soil_data.get('date_modified')
-        alternate_name = soil_data.get('alternate_name')
-        description = soil_data.get('description')
-        agro_voc_concept = soil_data.get('agro_voc_concept')
-        see_also = soil_data.get('see_also').split(',') if soil_data.get('see_also') else []
-        related_source = soil_data.get('related_source').split(',') if soil_data.get('related_source') else []
-        has_agri_product_type = soil_data.get('has_agri_product_type').split(',') if soil_data.get('has_agri_product_type') else []
+            new_soil = AgriSoil(
+                date_created=date_created,
+                date_modified=date_modified,
+                name=name,
+                alternate_name=alternate_name,
+                description=description,
+                agro_voc_concept=agro_voc_concept,
+                see_also=see_also,
+                related_source=related_source,
+                has_agri_product_type=has_agri_product_type
+            )
+            
+            smart_data_model = new_soil.to_smart_data_model()
         
-
-        new_soil = AgriSoil(
-            date_created=date_created,
-            date_modified=date_modified,
-            name=name,
-            alternate_name=alternate_name,
-            description=description,
-            agro_voc_concept=agro_voc_concept,
-            see_also=see_also,
-            related_source=related_source,
-            has_agri_product_type=has_agri_product_type
-        )
-        
-        smart_data_model = new_soil.to_smart_data_model()
-        send_to_context_broker("AgriSoil", smart_data_model)
+        send_to_kong("AgriSoil", smart_data_model)
         return smart_data_model, 201
 
 agri_soil_state_model = ns_smart_data_models.model('AgriSoilState', {
@@ -895,73 +937,80 @@ agri_soil_state_model = ns_smart_data_models.model('AgriSoilState', {
 @ns_smart_data_models.route('/agri_soil_state')
 class AgriSoilStateResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_soil_state_model, validate=True)
+    @ns_smart_data_models.expect(agri_soil_state_model, validate=False)
     @ns_smart_data_models.response(201, 'AgriSoilState successfully created.')
     def post(self):
         soil_state_data = request.get_json()
+        is_smart_data_model = 'id' in soil_state_data and 'type' in soil_state_data
+        if is_smart_data_model:
+            smart_data_model = soil_state_data
+            is_valid, error_message = AgriSoilState.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
+        else:
+            date_of_measurement = soil_state_data.get('date_of_measurement')
+            acidity = soil_state_data.get('acidity')
+            acidity_unit_code = soil_state_data.get('acidity_unit_code')
+            acidity_timestamp = soil_state_data.get('acidity_timestamp')
+            humus = soil_state_data.get('humus')
+            humus_unit_code = soil_state_data.get('humus_unit_code')
+            humus_timestamp = soil_state_data.get('humus_timestamp')
 
-        date_of_measurement = soil_state_data.get('date_of_measurement')
-        acidity = soil_state_data.get('acidity')
-        acidity_unit_code = soil_state_data.get('acidity_unit_code')
-        acidity_timestamp = soil_state_data.get('acidity_timestamp')
-        humus = soil_state_data.get('humus')
-        humus_unit_code = soil_state_data.get('humus_unit_code')
-        humus_timestamp = soil_state_data.get('humus_timestamp')
 
+            error_messages = []
+            if not date_of_measurement:
+                error_messages.append("Date of measurement is missing")
+            if not acidity:
+                error_messages.append("Acidity is missing")
+            if not acidity_unit_code:
+                error_messages.append("Acidity Unit Code is missing")
+            if not acidity_timestamp:
+                error_messages.append("Acidity timestamp is missing")
+            if not humus:
+                error_messages.append("Humus is missing")
+            if not humus_unit_code:
+                error_messages.append("Humus Unit Code is missing")
+            if not humus_timestamp:
+                error_messages.append("Humus Timestamp is missing")
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+            date_created = soil_state_data.get('date_created')
+            date_modified = soil_state_data.get('date_modified')
+            electrical_conductivity = soil_state_data.get('electrical_conductivity')
+            electrical_conductivity_unit = soil_state_data.get('electrical_conductivity_unit')
+            electrical_conductivity_timestamp = soil_state_data.get('electrical_conductivity_timestamp')
+            density = soil_state_data.get('density')
+            density_unit = soil_state_data.get('density_unit')
+            density_timestamp = soil_state_data.get('density_timestamp')
+            has_agri_soil = soil_state_data.get('has_agri_soil')
+            has_agri_parcel = soil_state_data.get('has_agri_parcel')
+            has_agri_greenhouse = soil_state_data.get('has_agri_greenhouse')
+            
 
-        error_messages = []
-        if not date_of_measurement:
-            error_messages.append("Date of measurement is missing")
-        if not acidity:
-            error_messages.append("Acidity is missing")
-        if not acidity_unit_code:
-            error_messages.append("Acidity Unit Code is missing")
-        if not acidity_timestamp:
-            error_messages.append("Acidity timestamp is missing")
-        if not humus:
-            error_messages.append("Humus is missing")
-        if not humus_unit_code:
-            error_messages.append("Humus Unit Code is missing")
-        if not humus_timestamp:
-            error_messages.append("Humus Timestamp is missing")
-        if error_messages:
-            return jsonify({"errors": error_messages}), 400
-        date_created = soil_state_data.get('date_created')
-        date_modified = soil_state_data.get('date_modified')
-        electrical_conductivity = soil_state_data.get('electrical_conductivity')
-        electrical_conductivity_unit = soil_state_data.get('electrical_conductivity_unit')
-        electrical_conductivity_timestamp = soil_state_data.get('electrical_conductivity_timestamp')
-        density = soil_state_data.get('density')
-        density_unit = soil_state_data.get('density_unit')
-        density_timestamp = soil_state_data.get('density_timestamp')
-        has_agri_soil = soil_state_data.get('has_agri_soil')
-        has_agri_parcel = soil_state_data.get('has_agri_parcel')
-        has_agri_greenhouse = soil_state_data.get('has_agri_greenhouse')
-        
+            new_soil_state = AgriSoilState(
+                date_created=date_created,
+                date_modified=date_modified,
+                date_of_measurement=date_of_measurement,
+                acidity=acidity,
+                acidity_unit=acidity_unit_code,
+                acidity_timestamp=acidity_timestamp,
+                humus=humus,
+                humus_unit=humus_unit_code,
+                humus_timestamp=humus_timestamp,
+                electrical_conductivity=electrical_conductivity,
+                electrical_conductivity_unit=electrical_conductivity_unit,
+                electrical_conductivity_timestamp=electrical_conductivity_timestamp,
+                density=density,
+                density_unit=density_unit,
+                density_timestamp=density_timestamp,
+                has_agri_soil=has_agri_soil,
+                has_agri_parcel=has_agri_parcel,
+                has_agri_greenhouse=has_agri_greenhouse
+            )
+            
+            smart_data_model = new_soil_state.to_smart_data_model()
 
-        new_soil_state = AgriSoilState(
-            date_created=date_created,
-            date_modified=date_modified,
-            date_of_measurement=date_of_measurement,
-            acidity=acidity,
-            acidity_unit=acidity_unit_code,
-            acidity_timestamp=acidity_timestamp,
-            humus=humus,
-            humus_unit=humus_unit_code,
-            humus_timestamp=humus_timestamp,
-            electrical_conductivity=electrical_conductivity,
-            electrical_conductivity_unit=electrical_conductivity_unit,
-            electrical_conductivity_timestamp=electrical_conductivity_timestamp,
-            density=density,
-            density_unit=density_unit,
-            density_timestamp=density_timestamp,
-            has_agri_soil=has_agri_soil,
-            has_agri_parcel=has_agri_parcel,
-            has_agri_greenhouse=has_agri_greenhouse
-        )
-        
-        smart_data_model = new_soil_state.to_smart_data_model()
-        send_to_context_broker("AgriSoilState", smart_data_model)
+        send_to_kong("AgriSoilState", smart_data_model)
         return smart_data_model, 201
 
 
@@ -981,51 +1030,59 @@ agri_yield_model = ns_smart_data_models.model('AgriYield', {
 @ns_smart_data_models.route('/agri_yield')
 class AgriYieldResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_yield_model, validate=True)
+    @ns_smart_data_models.expect(agri_yield_model, validate=False)
     @ns_smart_data_models.response(201, 'AgriYield successfully created.')
     def post(self):
         yield_data = request.get_json()
 
-        start_date_of_gathering_at = yield_data.get('start_date_of_gathering_at')
-        end_date_of_gathering_at = yield_data.get('end_date_of_gathering_at')
-        yield_value = yield_data.get('yield_value')
-        yield_max_value = yield_data.get('yield_max_value')
-        yield_min_value = yield_data.get('yield_min_value')
-        yield_unit_text = yield_data.get('yield_unit_text')
+        is_smart_data_model = 'id' in yield_data and 'type' in yield_data
+        if is_smart_data_model:
+            smart_data_model = yield_data
+            is_valid, error_message = AgriYield.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
+        else:
+            start_date_of_gathering_at = yield_data.get('start_date_of_gathering_at')
+            end_date_of_gathering_at = yield_data.get('end_date_of_gathering_at')
+            yield_value = yield_data.get('yield_value')
+            yield_max_value = yield_data.get('yield_max_value')
+            yield_min_value = yield_data.get('yield_min_value')
+            yield_unit_text = yield_data.get('yield_unit_text')
 
-        error_messages = []
-        if not start_date_of_gathering_at:
-            error_messages.append("Start date of gathering is missing")
-        if not end_date_of_gathering_at:
-            error_messages.append("End date of gathering is missing")
-        if not yield_value:
-            error_messages.append("Yield value is missing")
-        if not yield_max_value:
-            error_messages.append("Yield max value is missing")
-        if not yield_min_value:
-            error_messages.append("Yield min value is missing")
-        if not yield_unit_text:
-            error_messages.append("Yield unit value is missing")
-        if error_messages:
-            return jsonify({"errors": error_messages}), 400
-        has_agri_crop = yield_data.get('has_agri_crop')
-        has_agri_parcel = yield_data.get('has_agri_parcel')
+            error_messages = []
+            if not start_date_of_gathering_at:
+                error_messages.append("Start date of gathering is missing")
+            if not end_date_of_gathering_at:
+                error_messages.append("End date of gathering is missing")
+            if not yield_value:
+                error_messages.append("Yield value is missing")
+            if not yield_max_value:
+                error_messages.append("Yield max value is missing")
+            if not yield_min_value:
+                error_messages.append("Yield min value is missing")
+            if not yield_unit_text:
+                error_messages.append("Yield unit value is missing")
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+            has_agri_crop = yield_data.get('has_agri_crop')
+            has_agri_parcel = yield_data.get('has_agri_parcel')
 
+            
+
+            new_yield = AgriYield(
+                has_agri_crop=has_agri_crop,
+                has_agri_parcel=has_agri_parcel,
+                start_date_of_gathering_at=start_date_of_gathering_at,
+                end_date_of_gathering_at=end_date_of_gathering_at,
+                yield_value=yield_value,
+                yield_max_value=yield_max_value,
+                yield_min_value=yield_min_value,
+                yield_unit_text=yield_unit_text
+            )
+
+            smart_data_model = new_yield.to_smart_data_model()
         
-
-        new_yield = AgriYield(
-            has_agri_crop=has_agri_crop,
-            has_agri_parcel=has_agri_parcel,
-            start_date_of_gathering_at=start_date_of_gathering_at,
-            end_date_of_gathering_at=end_date_of_gathering_at,
-            yield_value=yield_value,
-            yield_max_value=yield_max_value,
-            yield_min_value=yield_min_value,
-            yield_unit_text=yield_unit_text
-        )
-
-        smart_data_model = new_yield.to_smart_data_model()
-        send_to_context_broker("AgriYield", smart_data_model)
+        send_to_kong("AgriYield", smart_data_model)
         return smart_data_model, 201
 
 agri_carbon_footprint_model = ns_smart_data_models.model('AgriCarbonFootprint', {
@@ -1045,54 +1102,61 @@ agri_carbon_footprint_model = ns_smart_data_models.model('AgriCarbonFootprint', 
 @ns_smart_data_models.route('/agri_carbon_footprint')
 class AgriCarbonFootprintResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_carbon_footprint_model, validate=True)
+    @ns_smart_data_models.expect(agri_carbon_footprint_model, validate=False)
     @ns_smart_data_models.response(201, 'AgriCarbonFootprint successfully created.')
     def post(self):
         carbon_footprint_data = request.get_json()
+        is_smart_data_model = 'id' in carbon_footprint_data and 'type' in carbon_footprint_data
+        if is_smart_data_model:
+            smart_data_model = carbon_footprint_data
+            is_valid, error_message = AgriCarbonFootPrint.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
+        else:
+            carbon_footprint_value = carbon_footprint_data.get('carbon_footprint_value')
+            carbon_footprint_accuracy_percent = carbon_footprint_data.get('carbon_footprint_accuracy_percent')
+            carbon_footprint_min_value = carbon_footprint_data.get('carbon_footprint_min_value')
+            carbon_footprint_unit_text = carbon_footprint_data.get('carbon_footprint_unit_text')
+            estimation_start_at = carbon_footprint_data.get('estimation_start_at')
+            estimation_end_at = carbon_footprint_data.get('estimation_end_at')
 
-        carbon_footprint_value = carbon_footprint_data.get('carbon_footprint_value')
-        carbon_footprint_accuracy_percent = carbon_footprint_data.get('carbon_footprint_accuracy_percent')
-        carbon_footprint_min_value = carbon_footprint_data.get('carbon_footprint_min_value')
-        carbon_footprint_unit_text = carbon_footprint_data.get('carbon_footprint_unit_text')
-        estimation_start_at = carbon_footprint_data.get('estimation_start_at')
-        estimation_end_at = carbon_footprint_data.get('estimation_end_at')
-
-        error_messages = []
-        if not carbon_footprint_value:
-            error_messages.append("Carbon footprint value is missing")
-        if not carbon_footprint_accuracy_percent:
-            error_messages.append("Carbon footprint accuracy percent is missing")
-        if not carbon_footprint_min_value:
-            error_messages.append("Carbon footprint min value is missing")
-        if not carbon_footprint_unit_text:
-            error_messages.append("Carbon footprint unit text is missing")
-        if not estimation_start_at:
-            error_messages.append("Estimation start date is missing")
-        if not estimation_end_at:
-            error_messages.append("Estimation end date is missing")
-        if error_messages:
-            return jsonify({"errors": error_messages}), 400
-        has_agri_crop = carbon_footprint_data.get('has_agri_crop')
-        has_agri_parcel = carbon_footprint_data.get('has_agri_parcel')
-        has_agri_yield = carbon_footprint_data.get('has_agri_yield')
-        carbon_footprint_accuracy_percent = carbon_footprint_data.get('carbon_footprint_accuracy_percent')
-        carbon_footprint_min_value = carbon_footprint_data.get('carbon_footprint_min_value')
-        carbon_footprint_unit_text = carbon_footprint_data.get('carbon_footprint_unit_text')
+            error_messages = []
+            if not carbon_footprint_value:
+                error_messages.append("Carbon footprint value is missing")
+            if not carbon_footprint_accuracy_percent:
+                error_messages.append("Carbon footprint accuracy percent is missing")
+            if not carbon_footprint_min_value:
+                error_messages.append("Carbon footprint min value is missing")
+            if not carbon_footprint_unit_text:
+                error_messages.append("Carbon footprint unit text is missing")
+            if not estimation_start_at:
+                error_messages.append("Estimation start date is missing")
+            if not estimation_end_at:
+                error_messages.append("Estimation end date is missing")
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+            has_agri_crop = carbon_footprint_data.get('has_agri_crop')
+            has_agri_parcel = carbon_footprint_data.get('has_agri_parcel')
+            has_agri_yield = carbon_footprint_data.get('has_agri_yield')
+            carbon_footprint_accuracy_percent = carbon_footprint_data.get('carbon_footprint_accuracy_percent')
+            carbon_footprint_min_value = carbon_footprint_data.get('carbon_footprint_min_value')
+            carbon_footprint_unit_text = carbon_footprint_data.get('carbon_footprint_unit_text')
 
 
-        new_carbon_footprint_data = AgriCarbonFootPrint(
-            has_agri_crop=has_agri_crop,
-            has_agri_parcel=has_agri_parcel,
-            has_agri_yield=has_agri_yield,
-            carbon_footprint_value=carbon_footprint_value,
-            carbon_footprint_accuracy_percent=carbon_footprint_accuracy_percent,
-            carbon_footprint_min_value=carbon_footprint_min_value,
-            carbon_footprint_unit_text=carbon_footprint_unit_text,
-            estimation_start_at=estimation_start_at,
-            estimation_end_at=estimation_end_at
-        )
+            new_carbon_footprint_data = AgriCarbonFootPrint(
+                has_agri_crop=has_agri_crop,
+                has_agri_parcel=has_agri_parcel,
+                has_agri_yield=has_agri_yield,
+                carbon_footprint_value=carbon_footprint_value,
+                carbon_footprint_accuracy_percent=carbon_footprint_accuracy_percent,
+                carbon_footprint_min_value=carbon_footprint_min_value,
+                carbon_footprint_unit_text=carbon_footprint_unit_text,
+                estimation_start_at=estimation_start_at,
+                estimation_end_at=estimation_end_at
+            )
 
-        smart_data_model = new_carbon_footprint_data.to_smart_data_model()
-        send_to_context_broker("AgriCarbonFootPrint", smart_data_model)
+            smart_data_model = new_carbon_footprint_data.to_smart_data_model()
+        
+        send_to_kong("AgriCarbonFootPrint", smart_data_model)
         return smart_data_model, 201
 

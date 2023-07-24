@@ -101,3 +101,12 @@ class AgriSoil(ModelBase):
         }
 
         return agri_soil_data
+
+
+    def validate_smart_data_model(data):
+        required_fields = ['dateCreated', 'dateModified', 'name']
+        for field in required_fields:
+            print(field)
+            if field not in data:
+                return False, f'Required "{field}" does not exist'
+        return True, ''
