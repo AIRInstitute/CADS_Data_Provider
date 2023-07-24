@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "711d2320-b537-4996-a931-11e53cfb3c8b",
-		"name": "CADS_DATA_PROVIDER",
+		"_postman_id": "29d9cf80-7cc0-40ee-a53d-bb45088fe24c",
+		"name": "AgriSync",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -13,7 +13,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "4d780fbb193d1490809b4616c8c90dbb8f6edeca",
+							"value": "",
 							"type": "string"
 						}
 					]
@@ -22,7 +22,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"Wheat farm\",\r\n  \"location\": \"100,0;101,0;101,1;100,1;100,0\",\r\n  \"type_location\": \"Polygon\",\r\n  \"address_locality\": \"Valdepeñas\",\r\n  \"address_country\": \"ES\",\r\n  \"address_street\": \"Camino de Membrilla 17\",\r\n  \"contact_point_telephone\": \"00349674532\",\r\n  \"contact_point_email\": \"wheatfarm@email.com\",\r\n  \"has_building\": \"urn:ngsi-ld:Building:32bbf1f4-8c67-4b5d-b19b-392879f72015,urn:ngsi-ld:Building:32bbf1f4-8c67-4b5d-b19b-392879f72035,urn:ngsi-ld:Building:35aa1f5f-7c78-4b7c-afc3-392d74f6b014\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:26ba4be0-4474-11e8-8ec1-ab9e0ea93835,urn:ngsi-ld:AgriParcel:2d5b8874-4474-11e8-8d6b-dbe14425b5e4,urn:ngsi-ld:AgriParcel:3f8b7982-4458-11e8-9ea6-db304564e5e6\",\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"description\": \"A farm producing wheat\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72551db2-91d1-43c3-8534-10f1044f7d98,urn:ngsi-ld:AgriApp:23564dsf-13ds-43d4-9734-10a124gds7d98\",\r\n  \"see_also\": \"https://example.org/concept/farm,https://datamodel.org/example/farm,https://datamodel.org/example/field\",\r\n  \"land_location\": \"100,0;101,0;101,1;100,1;100,0\",\r\n  \"land_location_type\": \"Polygon\",\r\n  \"owned_by\": \"urn:ngsi-ld:Person:430a3f2a-3434-49d1-a212-2f30a9824d99\"\r\n}",
+					"raw": "{\"name\": \"optimize turn-key platforms\", \"location\": \"97.29,0.94\", \"type_location\": \"Point\", \"address_locality\": \"Brendaland\", \"address_country\": \"AZ\", \"address_street\": \"39938 Allison Flats\", \"contact_point_telephone\": \"222.527.5688x04930\", \"contact_point_email\": \"alex69@example.com\", \"has_building\": \"urn:ngsi-ld:Building:020b3123-54da-4eb9-a42f-3cbfdb007ea7,urn:ngsi-ld:Building:3dfa01f0-676e-4628-8f9d-e40d421f4999,urn:ngsi-ld:Building:11ae4b29-4beb-4f3c-a1de-7dd63a5e7bd2\", \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:da2380db-7097-4f27-bbae-31a85185fbb3,urn:ngsi-ld:AgriParcel:4ebafd9b-753f-478c-a6d8-0b1157445252,urn:ngsi-ld:AgriParcel:12920d6c-8123-4fa7-bbcb-56f95ba31790\", \"date_created\": \"2022-10-08T15:23:35\", \"date_modified\": \"2023-07-13T08:33:58\", \"description\": \"Tree place gun easy around reason.\", \"related_source\": \"urn:ngsi-ld:AgriApp:4b9c4d5f-bbbb-43e4-9b99-8f99b6794f3b,urn:ngsi-ld:AgriApp:f86233d1-08da-41d6-a368-358c012429ab\", \"see_also\": \"https://example.org/concept/farm,https://datamodel.org/example/farm,https://datamodel.org/example/field\", \"land_location\": \"1.37,0.69;50.16,0.74;28.02,0.34;9.01,0.46;1.37,0.69\", \"land_location_type\": \"Polygon\", \"owned_by\": \"urn:ngsi-ld:Person:776f07e2-fbff-4d42-8959-17c3b4806daf\"}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -30,12 +30,9 @@
 					}
 				},
 				"url": {
-					"raw": "127.0.0.1:5000/api/agri-farm",
+					"raw": "localhost:5000/api/agri-farm",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"localhost"
 					],
 					"port": "5000",
 					"path": [
@@ -83,10 +80,10 @@
 							]
 						}
 					},
-					"_postman_previewlanguage": "Text",
-					"header": [],
+					"_postman_previewlanguage": null,
+					"header": null,
 					"cookie": [],
-					"body": ""
+					"body": null
 				}
 			]
 		},
@@ -98,7 +95,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "66c79fcff0c609716676e883be0055c9dd8db370",
+							"value": "1581185db206175d3ad4877dfb2b521e0781124e",
 							"type": "string"
 						}
 					]
@@ -195,7 +192,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "fc1a4477a1a23333851037cfecb874eab76e83b5",
+							"value": "dd8c9fcb7e1e3a8c478a7e477ccbc35547195834",
 							"type": "string"
 						}
 					]
@@ -204,7 +201,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"name\": \"Wheat\",\r\n  \"alternate_name\": \"Triticum aestivum\",\r\n  \"agro_voc_concept\": \"http://aims.fao.org/aos/agrovoc/c_7951\",\r\n  \"see_also\": \"https://example.org/concept/wheat,https://datamodel.org/example/wheat\",\r\n  \"description\": \"Spring wheat\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa931360259a;app:weat\",\r\n  \"has_agri_soil\": \"urn:ngsi-ld:AgriSoil:00411b56-bd1b-4551-96e0-a6e7fde9c840,urn:ngsi-ld:AgriSoil:e8a8389a-edf5-4345-8d2c-b98ac1ce8e2a\",\r\n  \"has_agri_fertiliser\": \"urn:ngsi-ld:AgriFertiliser:1b0d6cf7-320c-4a2b-b2f1-4575ea850c73,urn:ngsi-ld:AgriFertiliser:380973c8-4d3b-4723-a899-0c0c5cc63e7e\",\r\n  \"has_agri_pest\": \"urn:ngsi-ld:AgriPest:1b0d6cf7-320c-4a2b-b2f1-4575ea850c73,urn:ngsi-ld:AgriPest:380973c8-4d3b-4723-a899-0c0c5cc63e7e\",\r\n  \"planting_from\": \"[{\\\"dateRange\\\": \\\"-09-28/-10-12\\\", \\\"description\\\": \\\"Best Season\\\"}]\",\r\n  \"harvesting_interval\": \"[{\\\"dateRange\\\": \\\"-09-28/-10-12\\\", \\\"description\\\": \\\"Best Season\\\"}]\",\r\n  \"watering_frequency\": \"daily\"\r\n}",
+					"raw": "{\"id\": \"urn:ngsi-ld:AgriCrop:15ac23a8-6851-42c5-9a1b-acb5c2ae1049\", \"type\": \"AgriCrop\", \"dateCreated\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2020-06-13T03:30:09\"}}, \"dateModified\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-03-10T16:12:30\"}}, \"name\": \"Wheat\", \"alternateName\": \"Triticum aestivum\", \"agroVocConcept\": {\"type\": \"Property\", \"value\": {\"@type\": \"URL\", \"@value\": \"http://aims.fao.org/aos/agrovoc/c_7951\"}}, \"description\": {\"value\": \"Spring wheat\"}, \"relatedSource\": {\"value\": [{\"application\": \"urn:ngsi-ld:AgriApp:e38d0b3c-3f42-466f-a5c1-5966f366bf66;app:weat\", \"applicationEntityId\": \"app:crop1\"}]}, \"hasAgriSoil\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:AgriSoil:770b0586-1e4d-493d-9f02-9dbe09200d3a\", \"urn:ngsi-ld:AgriSoil:8253d7c5-1cb5-4132-a32f-bfc887e218cf\"]}, \"hasAgriFertiliser\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:AgriFertiliser:c5e26f2b-5cbe-4f6e-b2f2-cd2b3db19906\", \"urn:ngsi-ld:AgriFertiliser:8035f4c6-fb4c-423e-9722-9a251355b804\"]}, \"hasAgriPest\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:AgriPest:d155e1e3-ba3a-456c-9cdd-c9f288ca29f0\", \"urn:ngsi-ld:AgriPest:35b76d7b-5120-4db2-ad5d-021753e86c24\"]}, \"plantingFrom\": {\"value\": [{\"dateRange\": \"-09-28/-10-12\", \"description\": \"Best Season\"}]}, \"harvestingInterval\": {\"value\": [{\"dateRange\": \"-09-28/-10-12\", \"description\": \"Best Season\"}]}, \"wateringFrequency\": {\"value\": \"daily\"}}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -292,7 +289,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "fc1a4477a1a23333851037cfecb874eab76e83b5",
+							"value": "68cb858b16005ee26810d019df64358f9444ed4a",
 							"type": "string"
 						}
 					]
@@ -301,7 +298,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"relative_humidity\": 45,\r\n  \"co2\": 400,\r\n  \"date_created\": \"2023-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2023-03-01T12:30:00Z\",\r\n  \"owned_by\": \"urn:ngsi-ld:Person:abcd1234-3434-49d1-a212-2f30a9824d99\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:98765fb2-2231-41c3-1234-56f1044f7d98,urn:ngsi-ld:AgriApp:abcd1234-3434-49d1-a212-2f30a9824d99\",\r\n  \"see_also\": \"https://example.org/concept/greenhouse,https://datamodel.org/example/greenhouse\",\r\n  \"belongs_to\": \"urn:ngsi-ld:AgriFarm:1a2b3c4d-5e6f-7g8h-9i0j-klmnopqrstu\",\r\n  \"has_agri_parcel_parent\": \"urn:ngsi-ld:AgriParcel:12345abc-6de7-8901-2345-fghijk6789\",\r\n  \"has_agri_parcel_children\": \"urn:ngsi-ld:AgriParcel:54321cba-7de6-8901-2345-fghijk6789,urn:ngsi-ld:AgriParcel:abc123de-456f-789g-0hij-klmnopqrstuv\",\r\n  \"has_weather_observed\": \"urn:ngsi-ld:WeatherObserved:abcdefgh-ijkl-mnop-qrst-uvwxyz0123\",\r\n  \"has_water_quality_observed\": \"urn:ngsi-ld:WaterQualityObserved:abc123def-456ghi-789jkl-0mnopqrstuvwxyz,urn:ngsi-ld:WaterQualityObserved:def456ghi-789jkl-0mnop-abc123qrstuvwxyz\",\r\n  \"leaf_temperature\": 25,\r\n  \"daily_light\": 1000,\r\n  \"drain_flow\": 10,\r\n  \"has_device\": \"urn:ngsi-ld:Device:abcd1234-efgh-5678-ijkl-9mnopqrstuvwxyz,urn:ngsi-ld:Device:wxyz1234-lmno-5678-pqrs-9abcdefghijk\"\r\n}",
+					"raw": "{\"id\": \"urn:ngsi-ld:AgriGreenHouse:048a1d6d-864b-46f9-97de-8658942dfed1\", \"type\": \"AgriGreenHouse\", \"dateCreated\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2020-09-30T11:26:32\"}}, \"dateModified\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-03-15T00:54:03\"}}, \"ownedBy\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:Person:66ae0ef3-6d98-4202-8375-0d5be72cdcee\"}, \"relatedSource\": {\"value\": [{\"application\": [\"urn:ngsi-ld:AgriApp:45ef5c75-37e6-41e0-8ed4-9f06c42b2b43\", \"urn:ngsi-ld:AgriApp:48658520-3f95-42a0-a171-74225c191891\"], \"applicationEntityId\": \"app:greenhouse1\"}]}, \"seeAlso\": {\"type\": \"Relationship\", \"object\": [\"https://example.org/concept/greenhouse\", \"https://datamodel.org/example/greenhouse\"]}, \"belongsTo\": \"urn:ngsi-ld:AgriFarm:ffe40c07-ae08-4a4d-a192-7ac6177b8c2d\", \"hasAgriParcelParent\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:AgriParcel:794cbf9a-6a02-4695-9561-31be87555ff5\"]}, \"hasAgriParcelChildren\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:AgriParcel:2092eb43-bbfa-467f-9059-d9801e4127d0\", \"urn:ngsi-ld:AgriParcel:aa3806d6-466d-41b9-8c1b-c1033e04e02c\"]}, \"hasWeatherObserved\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:WeatherObserved:148b3e58-f736-4dce-93f8-1fb03cbea95c\"]}, \"hasWaterQualityObserved\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:WaterQualityObserved:804a0153-d732-4f00-9e2c-2259bf7e7a2c\", \"urn:ngsi-ld:WaterQualityObserved:47f623ad-10c5-4ba0-903c-f8d3a31314d7\"]}, \"relativeHumidity\": {\"type\": \"Property\", \"value\": 41.655659763803776}, \"leafTemperature\": {\"type\": \"Property\", \"value\": 22.699838136340823}, \"co2\": {\"type\": \"Property\", \"value\": 363.7647574630761}, \"dailyLight\": {\"type\": \"Property\", \"value\": 669.9288566158832}, \"drainFlow\": {\"type\": \"Property\", \"value\": {\"value\": 14.116626896101508, \"maxValue\": \"\", \"minValue\": \"\"}}, \"hasDevice\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:Device:c9b8c124-477b-433c-a38a-d3559ccb1bf6\", \"urn:ngsi-ld:Device:16e5e9fd-a3d7-4371-a3ef-3777632d7923\"]}}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -389,7 +386,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "c657efd0e0a095c41248ab3027cc8f19d495c796",
+							"value": "c8c14bae60d0f77b9c5e3f395840cf03fe4af610",
 							"type": "string"
 						}
 					]
@@ -398,7 +395,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"location\": \"100,0\",\r\n  \"location_type\": \"Point\",\r\n  \"area\": 200,\r\n  \"description\": \"Spring wheat\",\r\n  \"category\": \"arable\",\r\n  \"belongs_to\": \"urn:ngsi-ld:AgriFarm:f67adcbc-4479-22bc-9de1-cb228de7a765\",\r\n  \"owned_by\": \"urn:ngsi-ld:Person:fce9dcbc-4479-11e8-9de1-cb228de7a15c\",\r\n  \"has_agri_parcel_parent\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel_children\": \"urn:ngsi-ld:AgriParcel:26ba4be0-4474-11e8-8ec1-ab9e0ea93835,urn:ngsi-ld:AgriParcel:2d5b8874-4474-11e8-8d6b-dbe14425b5e4\",\r\n  \"has_agri_crop\": \"urn:ngsi-ld:AgriCrop:36021150-4474-11e8-a721-af07c5fae7c8\",\r\n  \"has_air_quality_observed\": \"urn:ngsi-ld:AirQualityObserved:B3F76EA170D030BCD9E036DCC9BEA22B\",\r\n  \"crop_status\": \"seeded\",\r\n  \"last_planted_at\": \"2016-08-23T10:18:16Z\",\r\n  \"has_agri_soil\": \"urn:ngsi-ld:AgriSoil:429d1338-4474-11e8-b90a-d3e34ceb73df\",\r\n  \"has_device\": \"urn:ngsi-ld:Device:4a40aeba-4474-11e8-86bf-03d82e958ce6,urn:ngsi-ld:Device:63217d24-4474-11e8-9da2-03d82e958ce6\",\r\n  \"soil_texture_type\": \"Clay\",\r\n  \"irrigation_system_type\": \"Drip irrigation\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:98765fb2-2231-41c3-1234-56f1044f7d98,urn:ngsi-ld:AgriApp:abcd1234-3434-49d1-a212-2f30a9824d99\",\r\n  \"see_also\": \"https://example.org/concept/agriparcel,https://datamodel.org/example/agriparcel\"\r\n}",
+					"raw": "{\"id\": \"urn:ngsi-ld:AgriParcel:2eca2b76-1cea-4ba3-965c-889c9f68ced4\", \"type\": \"AgriParcel\", \"dateCreated\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2021-06-12T12:52:49\"}}, \"dateModified\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-02-22T13:02:38\"}}, \"location\": {\"type\": \"GeoProperty\", \"value\": {\"type\": \"Polygon\", \"coordinates\": [[[29.14, 0.23], [40.98, 0.61], [46.88, 0.55], [98.05, 0.05], [29.14, 0.23]]]}}, \"area\": {\"value\": 313.57786248954596}, \"description\": {\"value\": \"Corn\"}, \"category\": {\"value\": \"permanent\"}, \"relatedSource\": {\"value\": [{\"application\": [\"urn:ngsi-ld:AgriApp:d3093274-53f3-4503-a0f6-d25103260ef0\", \"urn:ngsi-ld:AgriApp:2a925a78-636e-400d-85e7-7a4f24eeac22\"], \"applicationEntityId\": \"app:parcel1\"}]}, \"seeAlso\": {\"value\": [\"https://example.org/concept/agriparcel\", \"https://datamodel.org/example/agriparcel\"]}, \"belongsTo\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:AgriFarm:00c15c84-dab4-4851-b24f-730a7594d5c4\"}, \"ownedBy\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:Person:90994772-817b-4b48-93f3-c3578baa4d2b\"}, \"hasAgriParcelParent\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:AgriParcel:735be70b-deae-497a-aa50-c65ac6ad9415\"}, \"hasAgriParcelChildren\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:AgriParcel:7cc034dc-8527-40c6-b712-8696a60147c7\", \"urn:ngsi-ld:AgriParcel:1785e1c9-910e-49e0-926d-4c2752dfe230\"]}, \"hasAgriCrop\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:AgriCrop:6cd32445-5391-4376-a9e8-9e4b41580a94\"}, \"hasAirQualityObserved\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:AirQualityObserved:f1a3cef2-aceb-4348-b866-c3b87083335e\"}, \"cropStatus\": {\"value\": \"seeded\"}, \"lastPlantedAt\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-06-08T20:30:28\"}}, \"hasAgriSoil\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:AgriSoil:9d9f65fb-ef0f-433e-9953-6fcaad13b6a6\"}, \"hasDevice\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:Device:86b8fed1-da46-45c9-8b9c-ec9c6718ed57\", \"urn:ngsi-ld:Device:4d6e8e4d-545d-4ff4-8f40-2c76648d9624\"]}, \"soilTextureType\": {\"type\": \"Property\", \"value\": \"Loam\"}, \"irrigationSystemType\": {\"type\": \"Property\", \"value\": \"Drip irrigation\"}}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -486,7 +483,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "1543b574768a2d4b9c2bed8958a345beb2281943",
+							"value": "2514205021cee94aedd19f8b05214b214e3dcf5b",
 							"type": "string"
 						}
 					]
@@ -495,7 +492,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa931360259a,urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa941260259b\",\r\n  \"see_also\": \"https://example.org/concept/agriparcelop,https://datamodel.org/example/agriparcelop\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:318366a9-7643-4d8e-9a11-c76a8c29d8eb\",\r\n  \"operation_type\": \"fertiliser\",\r\n  \"description\": \"Monthly fertiliser application\",\r\n  \"result\": \"ok\",\r\n  \"planned_start_at\": \"2016-08-22T10:18:16Z\",\r\n  \"planned_end_at\": \"2016-08-28T10:18:16Z\",\r\n  \"status\": \"finished\",\r\n  \"has_operator\": \"urn:ngsi-ld:Person:fce9dcbc-4479-11e8-9de1-cb228de7a15c\",\r\n  \"started_at\": \"2016-08-22T10:18:16Z\",\r\n  \"ended_at\": \"2016-08-28T10:18:16Z\",\r\n  \"reported_at\": \"2016-08-28T10:18:16Z\",\r\n  \"has_agri_product_type\": \"urn:ngsi-ld:AgriProductType:a8f616b8-13fb-473a-8e61-b7a80c6c93ec\",\r\n  \"quantity\": 40,\r\n  \"water_source\": \"rainwater capture\",\r\n  \"work_order\": \"https://example.com/agriparcelrecords/workorder1\",\r\n  \"work_record\": \"https://example.com/agriparcelrecords/workrecord1\",\r\n  \"irrigation_record\": \"https://example.com/agriparcelrecords/irrigationrecord1\",\r\n  \"diesel_fuel_consumption\": 33,\r\n  \"gasoline_fuel_consumption\": 33,\r\n  \"diesel_fuel_consumption_max_value\": 50,\r\n  \"diesel_fuel_consumption_min_value\": 25,\r\n  \"diesel_fuel_consumption_unit_text\": \"liters\",\r\n  \"gasoline_fuel_consumption_max_value\": 50,\r\n  \"gasoline_fuel_consumption_min_value\": 25,\r\n  \"gasoline_fuel_consumption_unit_text\": \"liters\"\r\n}",
+					"raw": "{\"id\": \"urn:ngsi-ld:AgriParcelOperation:8617f2e9-ca04-4313-ad20-6f79e556d1e2\", \"type\": \"AgriParcelOperation\", \"dateCreated\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2020-04-24T00:21:39\"}}, \"dateModified\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-03-12T10:55:49\"}}, \"relatedSource\": {\"value\": [{\"application\": [\"urn:ngsi-ld:AgriApp:99f41992-266a-4e34-b070-e25dcd45e7c7\", \"urn:ngsi-ld:AgriApp:86d3aed7-2aad-4c41-84e7-cf536a1fee2d\"], \"applicationEntityId\": \"app:operation1\"}]}, \"seeAlso\": {\"value\": [\"https://example.org/concept/agriparcelop\", \"https://datamodel.org/example/agriparcelop\"]}, \"hasAgriParcel\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:AgriParcel:27ad7683-3586-4bad-be4d-3ea6bf4af9e2\"}, \"operationType\": {\"value\": \"fertiliser\"}, \"description\": {\"value\": \"Monthly operation application\"}, \"result\": {\"value\": \"pending\"}, \"plannedStartAt\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-05-17T04:58:11\"}}, \"plannedEndAt\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-06-27T07:54:37\"}}, \"status\": {\"value\": \"finished\"}, \"hasOperator\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:Person:eb02b44b-c964-4252-9fa8-651291a7621a\"}, \"startedAt\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-06-17T12:18:40\"}}, \"endedAt\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-02-03T05:06:46\"}}, \"reportedAt\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-03-31T18:39:27\"}}, \"hasAgriProductType\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:AgriProductType:70aa3724-e16e-4cab-b37e-bf17bb2fd2f8\"}, \"quantity\": {\"value\": 31.740055104801694}, \"waterSource\": {\"value\": \"well\"}, \"workOrder\": {\"type\": \"Property\", \"value\": {\"@type\": \"URL\", \"@value\": \"https://example.com/agriparcelrecords/workorder1\"}}, \"workRecord\": {\"type\": \"Property\", \"value\": {\"@type\": \"URL\", \"@value\": \"https://example.com/agriparcelrecords/workrecord1\"}}, \"irrigationRecord\": {\"type\": \"Property\", \"value\": {\"@type\": \"URL\", \"@value\": \"https://example.com/agriparcelrecords/irrigationrecord1\"}}, \"dieselFuelConsumption\": {\"type\": \"Property\", \"value\": {\"value\": 32.100711172828895, \"maxValue\": 50.0, \"minValue\": 50.0, \"unitText\": \"liters\"}}, \"gasolineFuelConsumption\": {\"type\": \"Property\", \"value\": {\"value\": 48.79602036870598, \"maxValue\": 50.0, \"minValue\": 20.0, \"unitText\": \"liters\"}}}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -583,7 +580,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "92a911ebcabbc8bdbf5c6fa10a017c3c5d242d9e",
+							"value": "320bdbb6a9329fbc446afb1da69cb6be4483505a",
 							"type": "string"
 						}
 					]
@@ -592,7 +589,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"name\": \"Clay\",\r\n  \"alternate_name\": \"Heavy soil\",\r\n  \"description\": \"Fine grained, poor draining soil. Particle size less than 0.002mm\",\r\n  \"agro_voc_concept\": \"http://aims.fao.org/aos/agrovoc/c_7951\",\r\n  \"see_also\": \"https://example.org/concept/clay\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa931360259a,urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa931360259a\",\r\n  \"has_agri_product_type\": \"urn:ngsi-ld:AgriProductType:ea54eedf-d5a7-4e44-bddd-50e9935237c0,urn:ngsi-ld:AgriProductType:275b4c08-5e52-4bb7-8523-74ce5d0007de\"\r\n}",
+					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"name\": \"Clay\",\r\n  \"alternate_name\": \"Heavy soil\",\r\n  \"description\": \"Fine grained, poor draining soil. Particle size less than 0.002mm\",\r\n  \"agro_voc_concept\": \"http://aims.fao.org/aos/agrovoc/c_7951\",\r\n  \"see_also\": \"https://example.org/concept/clay\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa931360259a\",\r\n  \"has_agri_product_type\": \"urn:ngsi-ld:AgriProductType:ea54eedf-d5a7-4e44-bddd-50e9935237c0\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -673,14 +670,14 @@
 			]
 		},
 		{
-			"name": "localhost:5000/api/agri_parcel_record",
+			"name": "localhost:5000/api/agri_parcel_operation Copy 2",
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "c657efd0e0a095c41248ab3027cc8f19d495c796",
+							"value": "2514205021cee94aedd19f8b05214b214e3dcf5b",
 							"type": "string"
 						}
 					]
@@ -689,7 +686,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:2d5b8874-4474-11e8-8d6b-dbe14425b5e4\",\r\n  \"type_location\": \"Point\",\r\n  \"location\": \"100.0,0.0\",\r\n  \"soil_temperature_unit\": \"CEL\",\r\n  \"soil_temperature\": 10.5,\r\n  \"air_temperature_unit\": \"CEL\",\r\n  \"air_temperature_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"air_temperature\": 15.3,\r\n  \"relative_humidity\": 60,\r\n  \"relative_humidity_unit\": \"P1\",\r\n  \"relative_humidity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"description\": \"Soil and weather conditions\",\r\n  \"related_source\": \"urn:ngsi-ld:AgriApp:72551db2-91d1-43c3-8534-10f1044f7d98,urn:ngsi-ld:AgriApp:72551db2-91d1-43c3-8534-10f1044f7d99\",\r\n  \"see_also\": \"https://example.org/concept/agriparcelrecord,https://example.org/concept/agriparcelrecord2\",\r\n  \"soil_moisture_vwc\": 0.35,\r\n  \"soil_moisture_ec\": 0.15,\r\n  \"soil_salinity\": 0.02,\r\n  \"leaf_wetness\": 0.8,\r\n  \"leaf_relative_humidity\": 70,\r\n  \"leaf_relative_humidity_unit\": \"P1\",\r\n  \"leaf_relative_humidity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"leaf_temperature\": 12.2,\r\n  \"solar_radiation\": 900,\r\n  \"atmospheric_pressure\": 1013,\r\n  \"has_device\": \"urn:ngsi-ld:Device:8a95babe-2f0e-43e7-a1ca-03d2b9ac0f3e,urn:ngsi-ld:Device:8a95babe-2f0e-43e7-a1ca-03d2b9ac0f3f\",\r\n  \"observed_at\": \"2021-09-01T10:00:00Z\",\r\n  \"soil_salinity_unit\": \"D10\",\r\n  \"soil_salinity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"leaf_wetness_unit\": \"P1\",\r\n  \"leaf_wetness_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"leaf_temperature_unit\": \"CEL\",\r\n  \"leaf_temperature_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"solar_radiation_unit\": \"CEL\",\r\n  \"solar_radiation_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"atmospheric_pressure_unit\": \"A97\",\r\n  \"atmospheric_pressure_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"soil_moisture_vwc_unit\": \"C62\",\r\n  \"soil_moisture_vwc_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"soil_moisture_ec_unit\": \"D10\",\r\n  \"soil_moisture_ec_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"depth\": 20,\r\n  \"depth_unit_code\": \"CMT\",\r\n  \"timestamp\": \"2023-05-16T01:20:00Z\"\r\n}",
+					"raw": "{\"id\": \"urn:ngsi-ld:AgriParcelRecord:df4934d4-767d-4efb-bbe1-ef41516b31fb\", \"type\": \"AgriParcelRecord\", \"dateCreated\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2022-10-14T12:08:42\"}}, \"dateModified\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-06-04T05:37:05\"}}, \"relatedSource\": {\"value\": [{\"application\": [\"urn:ngsi-ld:AgriApp:393a065f-7821-4ce3-b27f-6be6b747707e\", \"urn:ngsi-ld:AgriApp:30d9647d-fe72-4848-b03b-65fdc0ef1ae0\"], \"applicationEntityId\": \"app:record1\"}]}, \"seeAlso\": {\"value\": [\"https://example.org/concept/agriparcelrecord\", \"https://example.org/concept/agriparcelrecord2\"]}, \"hasAgriParcel\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:AgriParcel:47c7208c-8274-4724-a53d-34b618758a23\"}, \"location\": {\"type\": \"GeoProperty\", \"value\": {\"type\": \"Polygon\", \"coordinates\": [[[48.6, 0.26], [61.09, 0.05], [2.07, 0.44], [67.84, 0.37], [48.6, 0.26]]]}}, \"soilTemperature\": {\"type\": \"Property\", \"value\": 24.736734883456517, \"unitCode\": \"CEL\"}, \"timestamp\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-03-04T06:12:21\"}}, \"depth\": {\"type\": \"Property\", \"value\": 15.020771906349017, \"unitCode\": \"CMT\"}, \"soilMoistureVWC\": {\"type\": \"Property\", \"value\": 0.6915530692895341, \"unitCode\": \"C62\"}, \"soilMoistureEC\": {\"type\": \"Property\", \"value\": 0.5972726496773964, \"unitCode\": \"D10\", \"timestamp\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-01-16T11:21:45\"}}}, \"soilSalinity\": {\"type\": \"Property\", \"value\": 0.9543561098209214, \"unitCode\": \"D10\", \"timestamp\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-04-26T07:48:04\"}}}, \"leafWetness\": {\"type\": \"Property\", \"value\": 0.8213940865149839, \"unitCode\": \"P1\", \"timestamp\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-02-08T18:44:28\"}}}, \"leafRelativeHumidity\": {\"type\": \"Property\", \"value\": 20.54792670149601, \"unitCode\": \"P1\", \"timestamp\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-04-11T10:44:56\"}}}, \"leafTemperature\": {\"type\": \"Property\", \"value\": 20.529055689098506, \"unitCode\": \"CEL\", \"timestamp\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-03-22T19:16:24\"}}}, \"airTemperature\": {\"type\": \"Property\", \"value\": 0.2247145139420459, \"unitCode\": \"CEL\", \"timestamp\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-07-07T16:35:10\"}}}, \"solarRadiation\": {\"type\": \"Property\", \"value\": 1248.4518054799491, \"unitCode\": \"CEL\", \"timestamp\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-07-17T10:39:47\"}}}, \"relativeHumidity\": {\"type\": \"Property\", \"value\": 65.294602314805, \"unitCode\": \"P1\", \"timestamp\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-04-15T11:02:23\"}}}, \"atmosphericPressure\": {\"type\": \"Property\", \"value\": 987.8541529973193, \"unitCode\": \"A97\", \"timestamp\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-02-09T19:11:29\"}}}, \"description\": {\"type\": \"Property\", \"value\": \"Soil and weather conditions\"}, \"hasDevice\": {\"type\": \"Relationship\", \"object\": [\"urn:ngsi-ld:Device:6b356bda-17f8-4e56-be4d-c18e284777e2\", \"urn:ngsi-ld:Device:6ddccc21-1eed-4ae8-85f3-819b6769e8e0\"]}, \"observedAt\": \"2023-03-05T11:40:02\"}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -710,7 +707,7 @@
 			},
 			"response": [
 				{
-					"name": "localhost:5000/api/agri_carbon_record",
+					"name": "localhost:5000/api/agri_carbon_footprint",
 					"originalRequest": {
 						"method": "POST",
 						"header": [],
@@ -874,7 +871,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "567abb140bed5c304bdcedf609f74ad57e9d0a23",
+							"value": "25255eeff8e4b804059b942b162e9fec3c3076dd",
 							"type": "string"
 						}
 					]
@@ -883,7 +880,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"date_created\": \"2017-01-01T01:20:00Z\",\r\n  \"date_modified\": \"2017-05-04T12:30:00Z\",\r\n  \"date_of_measurement\": \"2017-01-01T01:20:00Z\",\r\n  \"acidity\": 7,\r\n  \"acidity_unit_code\": \"pH\",\r\n  \"acidity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"electrical_conductivity\": 1,\r\n  \"electrical_conductivity_unit\": \"ohm/meter\",\r\n  \"electrical_conductivity_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"density\": 10,\r\n  \"density_unit\": \"kg/m3\",\r\n  \"density_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"humus\": 5,\r\n  \"humus_unit_code\": \"percent\",\r\n  \"humus_timestamp\": \"2023-05-16T01:20:00Z\",\r\n  \"has_agri_soil\": \"urn:ngsi-ld:AgriSoil:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_parcel\": \"urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081\",\r\n  \"has_agri_greenhouse\": \"urn:ngsi-ld:AgriGreenhouse:1ea0f120-4474-11e8-9919-672036642081\"\r\n}",
+					"raw": "{\"id\": \"urn:ngsi-ld:AgriYield:7980f61c-88c2-4ce9-ab58-6e17e65c6e4a\", \"type\": \"AgriYield\", \"hasAgriCrop\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:AgriCrop:a2f58caa-c48c-4e06-8285-9ff76d7eed6d\"}, \"hasAgriParcel\": {\"type\": \"Relationship\", \"object\": \"urn:ngsi-ld:AgriParcel:b2b8e3d5-3775-4a82-b0d0-a671d5092aa4\"}, \"startDateOfGatheringAt\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-04-09T12:11:25\"}}, \"endDateOfGatheringAt\": {\"type\": \"Property\", \"value\": {\"@type\": \"DateTime\", \"@value\": \"2023-08-03T12:11:25\"}}, \"yield\": {\"type\": \"Property\", \"value\": {\"value\": 30.64, \"maxValue\": 38.68, \"minValue\": 24.82, \"unitText\": \"Tons per hectare\"}}}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -891,14 +888,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:5000/api/agri_soil_state",
+					"raw": "localhost:5000/api/agri_yield",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"api",
-						"agri_soil_state"
+						"agri_yield"
 					]
 				}
 			},
