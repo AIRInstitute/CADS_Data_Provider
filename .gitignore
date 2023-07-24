@@ -11,3 +11,5 @@ __pycache__/
 .VSCodeCounter/
 app/config.py   
 flask_session/
+participant_status.py
+*.p12
