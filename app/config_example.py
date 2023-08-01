@@ -47,3 +47,5 @@ SWAGGER_AUTHORIZATIONS = {
 #Uncomment, fill and import the following constants only if the 'send_to_context_broker' and 'get_entity_from_context_broker' methods in the utils.py file are uncommented
 #ORION_IP = ''
 #ORION_PORT = ''
+
+DATA_MODEL_JSON_LD = f'{APP_URL}/api/dataModel.Agrifood'

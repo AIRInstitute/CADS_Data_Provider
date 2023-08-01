@@ -3,7 +3,7 @@ import time
 import uuid
 from functools import wraps
 import requests
-from app.config import KEYROCK_ACCES_TOKEN_URL, KEYROCK_AR_DELEGATION_ENDPOINT, KEYROCK_AR_POLICY, APP_CLIENT_ID, APP_CLIENT_SECRET, KONG_ENTITIES, P12_FILE_PASS, P12_FILE_PATH, REQUIRED_KEYROCK_APP_KEY, USER_SERVICE_PROVIDER_EORI, KEYROCK_TOKEN_URL, USER_EORI, KEYROCK_USER_INFO_URL, USER_EORI
+from app.config import DATA_MODEL_JSON_LD, KEYROCK_ACCES_TOKEN_URL, KEYROCK_AR_DELEGATION_ENDPOINT, KEYROCK_AR_POLICY, APP_CLIENT_ID, APP_CLIENT_SECRET, KONG_ENTITIES, P12_FILE_PASS, P12_FILE_PATH, REQUIRED_KEYROCK_APP_KEY, USER_SERVICE_PROVIDER_EORI, KEYROCK_TOKEN_URL, USER_EORI, KEYROCK_USER_INFO_URL, USER_EORI
 import jwt
 from cryptography.hazmat.primitives.serialization.pkcs12 import load_key_and_certificates
 from cryptography.hazmat.primitives import serialization
@@ -154,7 +154,6 @@ def get_token_with_jwt():
     }
 
     client_assertion = jwt.encode(payload, private_key, headers=header, algorithm="RS256")
-    print("client assertion: ", client_assertion)
     post_headers = {"Content-type": "application/x-www-form-urlencoded"}
 
     post_parameters = {
@@ -166,7 +165,6 @@ def get_token_with_jwt():
     }
 
     response = requests.post(KEYROCK_ACCES_TOKEN_URL, headers=post_headers, data=post_parameters)
-    print("\nResponse satellite: " , response.text)
     if response.status_code in (200, 201, 202):
         access_token = response.json()["access_token"]
         return access_token
@@ -248,14 +246,12 @@ def send_to_kong(entity, agri_farm_data):
     token = get_token_with_jwt()
     headers = {
         "Authorization" : f'Bearer {token}',
-        "Content-Type" :  "application/json"
+        "Content-Type" :  "application/json",
+        "Link": f'<{DATA_MODEL_JSON_LD}>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
     }
+    print( headers)
  
     url = f"{KONG_ENTITIES}"
-    print("url: ", url)
-    print ("URL: ", url)
-    print("ENTITY: " , entity)
-    print("AGRI FARM DATA: ", agri_farm_data)
     entity_id = f"{agri_farm_data['id']}"
     payload = {
         "id": entity_id,
@@ -351,7 +347,6 @@ def add_policy_all_users(entity_type, action, allowed_attributes):
   
 
 def store_policy_in_ar(policy):
-    print(policy)
     access_token = get_token_with_jwt()
 
     headers = {
@@ -367,7 +362,6 @@ def store_policy_in_ar(policy):
         return {"error": f"Error storing policy: {response.status_code} - {response.text}"}, 400
 
 def list_policies():
-    print("list policies")
     access_token = get_token_with_jwt()
 
     headers = {
@@ -377,7 +371,6 @@ def list_policies():
     response = requests.post(KEYROCK_AR_DELEGATION_ENDPOINT, headers=headers)
 
     if response.status_code == 200:
-        print(response.text)
         policies = response.json()
         return policies
     else:
@@ -473,7 +466,6 @@ def test_policy():
                     ]
                 }
                 }
-    print(KEYROCK_AR_POLICY)
     response = requests.post(KEYROCK_AR_POLICY, headers=headers, data=post_data)
     if response.status_code == 200:
         return {"message": "Policy stored"}, 200
