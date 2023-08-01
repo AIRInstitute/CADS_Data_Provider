@@ -178,7 +178,6 @@ class AgriParcel(ModelBase):
     def validate_smart_data_model(data):
         required_fields = ['dateCreated', 'dateModified',  'location','area','description', 'category', 'belongsTo' ,'hasAgriSoil']
         for field in required_fields:
-            print(field)
             if field not in data:
                 return False, f'Required "{field}" does not exist'
         return True, ''

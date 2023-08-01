@@ -105,7 +105,6 @@ class GetEntityById(Resource):
         url = f"{KONG_ENTITIES}/{entity_id}"
 
         response = requests.get(url, headers=headers)
-        print("response", response)
         
 
         if response.status_code == 200:
@@ -155,7 +154,6 @@ class TestUserPolicy(Resource):
     # Resource class for test user policy
     authorization_ns.doc('test_user_policies')
     def post(self):
-        print("test")
         message, error = test_policy()
         return message, error
     
