@@ -49,3 +49,8 @@ SWAGGER_AUTHORIZATIONS = {
 #ORION_PORT = ''
 
 DATA_MODEL_JSON_LD = f'{APP_URL}/api/dataModel.Agrifood'
+
+
+AGRI_SOIL_STATE_URL = f'{APP_URL}/api/dataModel.AgriSoilState'
+AGRI_YIELD_URL = f'{APP_URL}/api/dataModel.AgriYield'
+AGRI_CARBON_FOOTPRINT_URL = f'{APP_URL}/api/dataModel.AgriCarbonFootprint'
