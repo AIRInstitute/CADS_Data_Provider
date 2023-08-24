@@ -1,0 +1,53 @@
+{% extends "datamodelbase.html" %}
+
+{% block content %}
+<div class="divTable blueTable">
+    <div class="divTableHeading">
+        <div class="divTableRow">
+            <div class="divTableHead"><h1>AgriYield</h1></div>
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h2>Definition</h2>
+            This entity contains a harmonised description of an agricultural yield, capturing data about the produced amount from crops. It is associated with the agricultural vertical and IoT applications.
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h2>Version</h2>
+            0.0.4
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h2>Original Schema</h2>
+            <a href="{{ AGRI_YIELD_URL_SCHEMA }}">{{ AGRI_YIELD_URL_SCHEMA }}</a>
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h3>Attributes of the entity</h3>
+        </div>
+    </div>
+    <ul>
+        <li><a href="https://smartdatamodels.org/dataModel.Agrifood/type">type</a></li>
+        <li><a href="https://smartdatamodels.org/dataModel.Agrifood/hasAgriCrop">hasAgriCrop</a></li>
+        <li><a href="https://smartdatamodels.org/dataModel.Agrifood/hasAgriParcel">hasAgriParcel</a></li>
+        <li>startDateOfGatheringAt</li>
+        <li>endDateOfGatheringAt</li>
+        <li>yield</li>
+    </ul>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h3>Required attributes</h3>
+        </div>
+    </div>
+    <ul>
+        <li>type</li>
+        <li>startDateOfGatheringAt</li>
+        <li>endDateOfGatheringAt</li>
+        <li>yeld</li>
+    </ul>
+</div>
+{% endblock %}

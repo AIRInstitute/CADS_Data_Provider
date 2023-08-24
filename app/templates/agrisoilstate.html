@@ -1,0 +1,58 @@
+{% extends "datamodelbase.html" %}
+
+{% block content %}
+<div class="divTable blueTable">
+    <div class="divTableHeading">
+        <div class="divTableRow">
+            <div class="divTableHead"><h1>Agri Soil State</h1></div>
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h2>Definition</h2>
+            This entity contains a harmonised description of the soil state primarily associated with the agricultural vertical.
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h2>Version</h2>
+            0.0.4
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h2>Original Schema</h2>
+            <a href="{{ AGRI_SOIL_STATE_URL_SCHEMA }}">{{ AGRI_SOIL_STATE_URL_SCHEMA }}</a>
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h3>Attributes of the entity</h3>
+        </div>
+    </div>
+    <ul>
+        <li><a href="https://smartdatamodels.org/dataModel.Agrifood/dateCreated">dateCreated</a></li>
+        <li><a href="https://smartdatamodels.org/dataModel.Agrifood/dateModified">dateModified</a></li>
+        <li>dateOfMeasurement</li>
+        <li>acidity</li>
+        <li>electricalConductivity</li>
+        <li>density</li>
+        <li>humus</li>
+        <li><a href="https://smartdatamodels.org/dataModel.Agrifood/hasAgriSoil">hasAgriSoil</a></li>
+        <li><a href="https://smartdatamodels.org/dataModel.Agrifood/hasAgriParcel">hasAgriParcel</a></li>
+        <li>hasAgriGreenhouse</li>
+    </ul>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h3>Required attributes</h3>
+        </div>
+    </div>
+    <ul>
+        <li>dateCreated</li>
+        <li>dateModified</li>
+        <li>dateOfMeasurement</li>
+        <li>acidity</li>
+        <li>humus</li>
+    </ul>
+</div>
+{% endblock %}

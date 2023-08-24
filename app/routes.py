@@ -2,7 +2,7 @@
 from flask import current_app, make_response, redirect, request, jsonify, Blueprint, render_template, url_for, session
 from app.auth import load_user
 from flask_login import current_user, login_required, login_user, logout_user
-from app.config import KEYROCK_ACCES_TOKEN_URL, KEYROCK_AUTHORIZATION_URL, APP_CLIENT_ID, APP_CLIENT_SECRET, DEVELOPMENT,KEYROCK_BASE_URL,  APP_REDIRECT_URI, KEYROCK_LOGOUT, KEYROCK_USER_INFO_URL
+from app.config import AGRI_CARBON_FOOTPRINT_URL, AGRI_CARBON_FOOTPRINT_URL_SCHEMA, AGRI_SOIL_STATE_URL, AGRI_SOIL_STATE_URL_SCHEMA, AGRI_YIELD_URL, AGRI_YIELD_URL_SCHEMA, KEYROCK_ACCES_TOKEN_URL, KEYROCK_AUTHORIZATION_URL, APP_CLIENT_ID, APP_CLIENT_SECRET, DEVELOPMENT,KEYROCK_BASE_URL,  APP_REDIRECT_URI, KEYROCK_LOGOUT, KEYROCK_USER_INFO_URL
 import requests
 import secrets
 from flask.sessions import SecureCookieSessionInterface
@@ -133,4 +133,15 @@ if DEVELOPMENT:
         return render_template("user_from_app.html", user=user, app_id=app_id)
     
 
- 
+    @main_blueprint.route("/datamodel/AgriCarbonFootprint", methods=["GET"])
+    def agri_carbon_footprint():
+        return render_template("agricarbonfootprint.html", AGRI_CARBON_FOOTPRINT_URL_SCHEMA=AGRI_CARBON_FOOTPRINT_URL_SCHEMA)
+    
+    @main_blueprint.route("/datamodel/AgriYield", methods=["GET"])
+    def agri_yield():
+        return render_template("agriyield.html", AGRI_YIELD_URL_SCHEMA=AGRI_YIELD_URL_SCHEMA)
+    
+    @main_blueprint.route("/datamodel/AgriSoilState", methods=["GET"])
+    def agri_soil_state():
+        return render_template("agrisoilstate.html", AGRI_SOIL_STATE_URL_SCHEMA=AGRI_SOIL_STATE_URL_SCHEMA)
+    

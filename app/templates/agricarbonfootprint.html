@@ -1,0 +1,56 @@
+{% extends "datamodelbase.html" %}
+
+
+{% block content %}
+<div class="divTable blueTable">
+    <div class="divTableHeading">
+        <div class="divTableRow">
+            <div class="divTableHead"><h1>AgriCarbonFootprint</h1></div>
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h2>Definition</h2>
+            This entity contains a harmonised description of the carbon footprint of an agricultural activity. It is associated with the agricultural vertical and related IoT applications.
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h2>Version</h2>
+            0.0.4
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h2>Original Schema</h2>
+            <a href="{{ AGRI_CARBON_FOOTPRINT_URL_SCHEMA }}">{{ AGRI_CARBON_FOOTPRINT_URL_SCHEMA }}</a>
+        </div>
+    </div>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h3>Attributes of the entity</h3>
+        </div>
+    </div>
+    <ul>
+        <li><a href="https://smartdatamodels.org/dataModel.Agrifood/type">type</a></li>
+        <li><a href="https://smartdatamodels.org/dataModel.Agrifood/hasAgriCrop">hasAgriCrop</a></li>
+        <li><a href="https://smartdatamodels.org/dataModel.Agrifood/hasAgriParcel">hasAgriParcel</a></li>
+        <li>hasAgriYield</li>
+        <li>carbonFootprint</li>
+        <li>estimationStartAt</li>
+        <li>estimationEndAt</li>
+    </ul>
+    <div class="divTableRow">
+        <div class="divTableCell">
+            <h3>Required attributes</h3>
+        </div>
+    </div>
+    <ul>
+        <li>type</li>
+        <li>carbonFootprint</li>
+        <li>estimationStartAt</li>
+        <li>estimationEndAt</li>
+    </ul>
+</div>
+{% endblock %}
+

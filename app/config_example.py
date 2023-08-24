@@ -51,6 +51,12 @@ SWAGGER_AUTHORIZATIONS = {
 DATA_MODEL_JSON_LD = f'{APP_URL}/api/dataModel.Agrifood'
 
 
-AGRI_SOIL_STATE_URL = f'{APP_URL}/api/dataModel.AgriSoilState'
-AGRI_YIELD_URL = f'{APP_URL}/api/dataModel.AgriYield'
-AGRI_CARBON_FOOTPRINT_URL = f'{APP_URL}/api/dataModel.AgriCarbonFootprint'
+AGRI_SOIL_STATE_URL = f'{APP_URL}/datamodel/AgriSoilState'
+AGRI_YIELD_URL = f'{APP_URL}/datamodel/AgriYield'
+AGRI_CARBON_FOOTPRINT_URL = f'{APP_URL}/datamodel/AgriCarbonFootprint'
+
+
+
+AGRI_SOIL_STATE_URL_SCHEMA = f'{APP_URL}/api/dataModel.AgriSoilState/schema.json'
+AGRI_YIELD_URL_SCHEMA = f'{APP_URL}/api/dataModel.AgriYield/schema.json'
+AGRI_CARBON_FOOTPRINT_URL_SCHEMA = f'{APP_URL}/api/dataModel.AgriCarbonFootprint/schema.json'

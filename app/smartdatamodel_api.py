@@ -1,7 +1,7 @@
 from json import loads
 import logging
 from flask import Blueprint, request, jsonify
-from app.config import SWAGGER_AUTHORIZATIONS
+from app.config import AGRI_CARBON_FOOTPRINT_URL_SCHEMA, AGRI_SOIL_STATE_URL_SCHEMA, AGRI_YIELD_URL_SCHEMA, SWAGGER_AUTHORIZATIONS
 from app.config_example import AGRI_CARBON_FOOTPRINT_URL, AGRI_SOIL_STATE_URL, AGRI_YIELD_URL
 from app.smart_data_models.agri_carbon_footprint import AgriCarbonFootPrint
 from app.smart_data_models.agri_crop import AgriCrop
@@ -1262,20 +1262,262 @@ class AgrifoodResource(Resource):
 
 
 
-@ns_smart_data_models.route('/dataModel.AgriSoilState')
+@ns_smart_data_models.route('/dataModel.AgriSoilState/schema.json')
 class AgriSoilStateResource(Resource):
-    @ns_smart_data_models.response(200, 'AgriSoilState model data successfully retrieved.')
+    @ns_smart_data_models.response(200, 'AgriSoilState model schema successfully retrieved.')
     def get(self):
-        return {...}
+        return {
+                    "$schema": "http://json-schema.org/schema#",
+                    "$schemaVersion": "0.0.4",
+                    "modelTags": "",
+                    "$id": AGRI_SOIL_STATE_URL_SCHEMA,
+                    "title": "Smart Data Models - Agri Soil State",
+                    "description": "This entity contains a harmonised description of the soil state primarily associated with the agricultural vertical.",
+                    "type": "object",
+                    "properties": {
+                        "dateCreated": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Property. DateTime when the soil state was created."
+                        },
+                        "dateModified": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Property. DateTime when the soil state was last modified."
+                        },
+                        "dateOfMeasurement": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Property. DateTime when the measurements were taken."
+                        },
+                        "acidity": {
+                        "type": "number",
+                        "description": "Property. Acidity level of the soil.",
+                        "metadata": {
+                            "unitCode": {
+                            "type": "string",
+                            "enum": ["pH"]
+                            },
+                            "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                            }
+                        }
+                        },
+                        "electricalConductivity": {
+                        "type": "number",
+                        "description": "Property. Electrical conductivity of the soil.",
+                        "metadata": {
+                            "unitCode": {
+                            "type": "string",
+                            "enum": ["ohm/meter"]
+                            },
+                            "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                            }
+                        }
+                        },
+                        "density": {
+                        "type": "number",
+                        "description": "Property. Density of the soil.",
+                        "metadata": {
+                            "unitCode": {
+                            "type": "string",
+                            "enum": ["kg/m3"]
+                            },
+                            "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                            }
+                        }
+                        },
+                        "humus": {
+                        "type": "number",
+                        "description": "Property. Humus content in the soil.",
+                        "metadata": {
+                            "unitCode": {
+                            "type": "string",
+                            "enum": ["percent"]
+                            },
+                            "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                            }
+                        }
+                        },
+                        "hasAgriSoil": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Relationship. Reference to the associated AgriSoil."
+                        },
+                        "hasAgriParcel": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Relationship. Reference to the associated AgriParcel."
+                        },
+                        "hasAgriGreenhouse": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Relationship. Reference to the associated AgriGreenhouse."
+                        }
+                    },
+                    "required": ["dateCreated", "dateModified", "dateOfMeasurement", "acidity", "humus"]
+                }
 
-@ns_smart_data_models.route('/dataModel.AgriYield')
+
+@ns_smart_data_models.route('/dataModel.AgriYield/schema.json')
 class AgriYieldResource(Resource):
-    @ns_smart_data_models.response(200, 'AgriYield model data successfully retrieved.')
+    @ns_smart_data_models.response(200, 'AgriYield model schema successfully retrieved.')
     def get(self):
-        return {...}
+        return {
+                    "$schema": "http://json-schema.org/schema#",
+                    "$schemaVersion": "0.0.4",
+                    "$id": AGRI_YIELD_URL_SCHEMA,
+                    "title": "Smart Data Models - AgriYield",
+                    "description": "This entity contains a harmonised description of an agricultural yield, capturing data about the produced amount from crops. It is associated with the agricultural vertical and IoT applications.",
+                    "type": "object",
+                    "allOf": [
+                        {
+                        "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/GSMA-Commons"
+                        },
+                        {
+                        "properties": {
+                            "type": {
+                            "type": "string",
+                            "enum": [
+                                "AgriYield"
+                            ],
+                            "description": "Property. NGSI Entity Type. It has to be AgriYield."
+                            },
+                            "hasAgriCrop": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Relationship. Reference to the AgriCrop related to this yield."
+                            },
+                            "hasAgriParcel": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Relationship. Reference to the AgriParcel where the yield was produced."
+                            },
+                            "startDateOfGatheringAt": {
+                            "type": "string",
+                            "format": "dateTime",
+                            "description": "Property. Start date of the gathering process."
+                            },
+                            "endDateOfGatheringAt": {
+                            "type": "string",
+                            "format": "dateTime",
+                            "description": "Property. End date of the gathering process."
+                            },
+                            "yeld": {
+                            "type": "object",
+                            "description": "Property. Information about the amount of produced yield.",
+                            "properties": {
+                                "value": {
+                                "type": "number"
+                                },
+                                "maxValue": {
+                                "type": "number"
+                                },
+                                "minValue": {
+                                "type": "number"
+                                },
+                                "unitText": {
+                                "type": "string",
+                                "enum": ["Tons per hectare"]
+                                }
+                            },
+                            "required": ["value", "maxValue", "minValue", "unitText"]
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "startDateOfGatheringAt",
+                            "endDateOfGatheringAt",
+                            "yeld"
+                        ]
+                        }
+                    ]
+                }
 
-@ns_smart_data_models.route('/dataModel.AgriCarbonFootprint')
+
+@ns_smart_data_models.route('/dataModel.AgriCarbonFootprint/schema.json')
 class AgriCarbonFootprintResource(Resource):
-    @ns_smart_data_models.response(200, 'AgriCarbonFootprint model data successfully retrieved.')
+    @ns_smart_data_models.response(200, 'AgriCarbonFootprint model schema successfully retrieved.')
     def get(self):
-        return {...}
+        return {
+                    "$schema": "http://json-schema.org/schema#",
+                    "$schemaVersion": "0.0.4",
+                    "$id": AGRI_CARBON_FOOTPRINT_URL_SCHEMA,
+                    "title": "Smart Data Models - AgriCarbonFootprint",
+                    "description": "This entity contains a harmonised description of the carbon footprint of an agricultural activity, capturing data related to the emission of greenhouse gases. It is associated with the agricultural vertical and IoT applications.",
+                    "type": "object",
+                    "allOf": [
+                        {
+                        "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/GSMA-Commons"
+                        },
+                        {
+                        "properties": {
+                            "type": {
+                            "type": "string",
+                            "enum": [
+                                "AgriCarbonFootprint"
+                            ],
+                            "description": "Property. NGSI Entity Type. It has to be AgriCarbonFootprint."
+                            },
+                            "hasAgriCrop": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Relationship. Reference to the AgriCrop related to this carbon footprint."
+                            },
+                            "hasAgriParcel": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Relationship. Reference to the AgriParcel where the activity causing this carbon footprint took place."
+                            },
+                            "hasAgriYeld": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Relationship. Reference to the AgriYield associated with this carbon footprint."
+                            },
+                            "carbonFootprint": {
+                            "type": "object",
+                            "description": "Property. Details about the carbon footprint value.",
+                            "properties": {
+                                "value": {
+                                "type": "number"
+                                },
+                                "accuracyPercent": {
+                                "type": "number"
+                                },
+                                "minValue": {
+                                "type": "number"
+                                },
+                                "unitText": {
+                                "type": "string",
+                                "enum": ["Tons"]
+                                }
+                            },
+                            "required": ["value", "accuracyPercent", "minValue", "unitText"]
+                            },
+                            "estimationStartAt": {
+                            "type": "string",
+                            "format": "dateTime",
+                            "description": "Property. Start date of the carbon footprint estimation period."
+                            },
+                            "estimationEndAt": {
+                            "type": "string",
+                            "format": "dateTime",
+                            "description": "Property. End date of the carbon footprint estimation period."
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "carbonFootprint",
+                            "estimationStartAt",
+                            "estimationEndAt"
+                        ]
+                        }
+                    ]
+                }
