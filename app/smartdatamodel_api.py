@@ -15,6 +15,7 @@ from app.smart_data_models.agri_soil import AgriSoil
 from app.smart_data_models.agri_soil_state import AgriSoilState
 from app.smart_data_models.agri_yield import AgriYield
 from app.smart_data_models.building import Building
+from app.smart_data_models.person import Person
 from app.utils import api_key_required, send_to_kong
 from flask_restx import Namespace, Resource, fields
 from app import RelationshipField
@@ -1271,7 +1272,7 @@ building_model = ns_smart_data_models.model('Building', {
 @ns_smart_data_models.route('/building')
 class BuildingResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(building_model, validate=False)  # Assuming you have a model called "building_model"
+    @ns_smart_data_models.expect(building_model, validate=False)  
     @ns_smart_data_models.response(201, 'Building successfully created.')
     def post(self):
         building_data = request.get_json()
@@ -1322,6 +1323,83 @@ class BuildingResource(Resource):
 
         send_to_kong("Building", smart_data_model)  
         return smart_data_model, 201
+    
+person_model = ns_smart_data_models.model('Person', {
+    'additionalName': fields.String(description='An additional name for a person', example='John Jr.'),
+    'address': fields.String(description='The mailing address', example="123 Main St"),
+    'alternateName': fields.String(description='An alternate name for this item', example="Johnny"),
+    'areaServed': fields.String(description='The geographic area where a service is provided', example="New York"),
+    'dataProvider': fields.String(description='Identifier for the provider of the data', example="DataProvider Inc."),
+    'dateCreated': fields.DateTime(description='Entity creation timestamp', example="2020-01-01T01:20:00Z"),
+    'dateModified': fields.DateTime(description='Timestamp of the last entity modification', example="2021-01-01T01:20:00Z"),
+    'description': fields.String(description='A description of this item', example="A software engineer"),
+    'email': fields.String(description='Email address of owner', example="john@example.com"),
+    'familyName': fields.String(description='Family name', example="Doe"),
+    'givenName': fields.String(description='Given name', example="John"),
+    'id': fields.String(required=True, description='Unique identifier of the entity', example="urn:ngsi-ld:Person:1234567890"),
+    'location': fields.String(description='Geojson reference to the item', example={"type": "Point", "coordinates": [40.7128, -74.0060]}),
+    'name': fields.String(description='Name of this item', example="John Doe"),
+    'owner': fields.List(fields.String, description='List of unique IDs of the owner(s)', example=["urn:ngsi-ld:Owner:123", "urn:ngsi-ld:Owner:456"]),
+    'seeAlso': fields.List(fields.String, description='List of URIs pointing to additional resources about the item', example=["https://seealso.example.com"]),
+    'source': fields.String(description='Original source of the entity data as a URL', example="https://source.example.com"),
+    'telephone': fields.String(description='Telephone number', example="123-456-7890"),
+    'type': fields.String(required=True, description='Type of data model', example="PersonType")
+})
+
+
+@ns_smart_data_models.doc(security='Bearer Auth')
+@ns_smart_data_models.route('/person')
+class PersonResource(Resource):
+
+    @api_key_required
+    @ns_smart_data_models.expect(person_model, validate=False)
+    @ns_smart_data_models.response(201, 'Person successfully created.')
+    def post(self):
+        person_data = request.get_json()
+        is_smart_data_model = 'id' in person_data and 'type' in person_data
+        if is_smart_data_model:
+            smart_data_model = person_data
+            is_valid, error_message = Person.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
+        else:
+            error_messages = []
+
+            for field in ['id', 'type', 'familyName', 'givenName']:
+                if field not in person_data:
+                    error_messages.append(f"{field} is missing")
+
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+
+            new_person_data = Person(
+                id=person_data['id'],
+                type=person_data['type'],
+                additionalName=person_data.get('additionalName'),
+                address=person_data.get('address'),
+                alternateName=person_data.get('alternateName'),
+                areaServed=person_data.get('areaServed'),
+                dataProvider=person_data.get('dataProvider'),
+                dateCreated=person_data.get('dateCreated'),
+                dateModified=person_data.get('dateModified'),
+                description=person_data.get('description'),
+                email=person_data.get('email'),
+                familyName=person_data['familyName'],
+                givenName=person_data['givenName'],
+                location=person_data.get('location'),
+                name=person_data.get('name'),
+                owner=person_data.get('owner'),
+                seeAlso=person_data.get('seeAlso'),
+                source=person_data.get('source'),
+                telephone=person_data.get('telephone')
+            )
+
+            smart_data_model = new_person_data.to_smart_data_model()
+
+        send_to_kong("Person", smart_data_model)  
+        return smart_data_model, 201
+
+
 
 @ns_smart_data_models.route('/dataModel.Agrifood')
 class AgrifoodResource(Resource):
