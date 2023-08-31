@@ -3,6 +3,7 @@ import logging
 from flask import Blueprint, request, jsonify
 from app.config import AGRI_CARBON_FOOTPRINT_URL_SCHEMA, AGRI_SOIL_STATE_URL_SCHEMA, AGRI_YIELD_URL_SCHEMA, SWAGGER_AUTHORIZATIONS
 from app.config_example import AGRI_CARBON_FOOTPRINT_URL, AGRI_SOIL_STATE_URL, AGRI_YIELD_URL
+from app.smart_data_models.agri_app import AgriApp
 from app.smart_data_models.agri_carbon_footprint import AgriCarbonFootPrint
 from app.smart_data_models.agri_crop import AgriCrop
 from app.smart_data_models.agri_farm import AgriFarm
@@ -13,6 +14,7 @@ from app.smart_data_models.agri_parcel_record import AgriParcelRecord
 from app.smart_data_models.agri_soil import AgriSoil
 from app.smart_data_models.agri_soil_state import AgriSoilState
 from app.smart_data_models.agri_yield import AgriYield
+from app.smart_data_models.building import Building
 from app.utils import api_key_required, send_to_kong
 from flask_restx import Namespace, Resource, fields
 from app import RelationshipField
@@ -1162,6 +1164,165 @@ class AgriCarbonFootprintResource(Resource):
         return smart_data_model, 201
 
 
+agri_app_model = ns_smart_data_models.model('AgriApp', {
+    'address': fields.String(description='Address of the app', example="123 Apple Street"),
+    'alternateName': fields.String(description='Alternate name of the app', example="AgricApp"),
+    'areaServed': fields.String(description='Area where the app is served', example="Global"),
+    'category': fields.String(description='Category of the app', example="Agriculture"),
+    'dataProvider': fields.String(description='Data provider for the app', example="DataProvider Inc."),
+    'dateCreated': fields.DateTime(description='Date when the app was created', example="2018-01-01T01:20:00Z"),
+    'dateModified': fields.DateTime(description='Date when the app was last modified', example="2020-01-01T01:20:00Z"),
+    'description': fields.String(description='Description of the app', example="An app for modern agriculture"),
+    'endpoint': fields.String(description='Endpoint for accessing the app', example="https://agriapp.example.com"),
+    'hasProvider': fields.String(description='Provider of the app', example="Provider Inc."),
+    'id': fields.String(required=True, description='ID of the app', example="urn:ngsi-ld:AgriApp:1ea0f120-4474-11e8-9919-672036642081"),
+    'location': fields.String(description='Location where the app is primarily used', example="Global"),
+    'name': fields.String(description='Name of the app', example="AgriApp"),
+    'owner': fields.String(description='Owner of the app', example="John Doe"),
+    'relatedSource': fields.String(description='Related source for the app', example="https://relatedsource.example.com"),
+    'seeAlso': fields.String(description='Further information for the app', example="https://seealso.example.com"),
+    'source': fields.String(description='Source from where the app originated', example="https://source.example.com"),
+    'type': fields.String(required=True, description='Type of data model', example="AgriAppType"),
+    'version': fields.String(description='Version of the app', example="1.0.0")
+})
+
+
+@ns_smart_data_models.doc(security='Bearer Auth')
+@ns_smart_data_models.route('/agri_app')
+class AgriAppResource(Resource):
+    @api_key_required
+    @ns_smart_data_models.expect(agri_app_model, validate=False)
+    @ns_smart_data_models.response(201, 'AgriApp successfully created.')
+    def post(self):
+        app_data = request.get_json()
+        is_smart_data_model = 'id' in app_data and 'type' in app_data
+        if is_smart_data_model:
+            smart_data_model = app_data
+            is_valid, error_message = AgriApp.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
+        else:
+            error_messages = []
+
+            if 'id' not in app_data:
+                error_messages.append("ID is missing")
+            if 'type' not in app_data:
+                error_messages.append("Type is missing")
+
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+
+
+            new_app_data = AgriApp(id=app_data['id'], type=app_data['type'],
+                       address=app_data.get('address'),
+                       alternateName=app_data.get('alternateName'),
+                       areaServed=app_data.get('areaServed'),
+                       category=app_data.get('category'),
+                       dataProvider=app_data.get('dataProvider'),
+                       dateCreated=app_data.get('dateCreated'),
+                       dateModified=app_data.get('dateModified'),
+                       description=app_data.get('description'),
+                       endpoint=app_data.get('endpoint'),
+                       hasProvider=app_data.get('hasProvider'),
+                       location=app_data.get('location'),
+                       name=app_data.get('name'),
+                       owner=app_data.get('owner'),
+                       relatedSource=app_data.get('relatedSource'),
+                       seeAlso=app_data.get('seeAlso'),
+                       source=app_data.get('source'),
+                       version=app_data.get('version'))
+
+
+            smart_data_model = new_app_data.to_smart_data_model()
+
+        send_to_kong("AgriApp", smart_data_model)
+        return smart_data_model, 201
+
+
+building_model = ns_smart_data_models.model('Building', {
+    'id': fields.String(required=True, description='Unique identifier of the building', example="urn:ngsi-ld:Building:1ea0f120-4474-11e8-9919-672036642081"),
+    'type': fields.String(required=True, description='NGSI Entity type', example="BuildingType"),
+    'address': fields.String(description='The mailing address of the building', example="123 Brick Street"),
+    'alternateName': fields.String(description='An alternative name for the building', example="Skyscraper X"),
+    'areaServed': fields.String(description='The geographic area where the building is located', example="Downtown"),
+    'category': fields.List(fields.String, description='Category of the building', example=["Commercial", "Skyscraper"]),
+    'collapseRisk': fields.Float(description='Probability of total collapse of the building', example=0.05),
+    'containedInPlace': fields.Raw(description='Geojson reference to the building', example={"type": "Point", "coordinates": [125.6, 10.1]}),
+    'dataProvider': fields.String(description='Identifier for the data provider of the building information', example="DataProvider Inc."),
+    'dateCreated': fields.DateTime(description='Entity creation timestamp for the building', example="2020-01-01T01:20:00Z"),
+    'dateModified': fields.DateTime(description='Timestamp of the last modification of the building information', example="2021-01-01T01:20:00Z"),
+    'description': fields.String(description='Description of the building', example="A modern skyscraper with commercial offices"),
+    'floorsAboveGround': fields.Integer(description='Number of floors above ground', example=50),
+    'floorsBelowGround': fields.Integer(description='Number of floors below ground', example=3),
+    'location': fields.Raw(description='Geojson reference to the building location', example={"type": "Point", "coordinates": [125.6, 10.1]}),
+    'name': fields.String(description='Name of the building', example="The Tower"),
+    'occupier': fields.List(fields.String, description='List of persons or entities using the building', example=["Company A", "Company B"]),
+    'openingHours': fields.List(fields.String, description='Opening hours of the building', example=["9:00-18:00"]),
+    'owner': fields.List(fields.String, description='List of owner ids of the building', example=["urn:ngsi-ld:Owner:123", "urn:ngsi-ld:Owner:456"]),
+    'peopleCapacity': fields.Float(description='Allowed people capacity of the building', example=2000.0),
+    'peopleOccupancy': fields.Float(description='Current people occupancy in the building', example=1500.0),
+    'refMap': fields.Raw(description='Reference to the map containing the building', example={"type": "URL", "value": "https://map.example.com/building1"}),
+    'seeAlso': fields.List(fields.String, description='URIs pointing to additional building-related resources', example=["https://seealso.example.com"]),
+    'source': fields.String(description='Original source of building data as URL', example="https://source.example.com")
+})
+
+
+@ns_smart_data_models.doc(security='Bearer Auth')
+@ns_smart_data_models.route('/building')
+class BuildingResource(Resource):
+    @api_key_required
+    @ns_smart_data_models.expect(building_model, validate=False)  # Assuming you have a model called "building_model"
+    @ns_smart_data_models.response(201, 'Building successfully created.')
+    def post(self):
+        building_data = request.get_json()
+        is_smart_data_model = 'id' in building_data and 'type' in building_data
+        if is_smart_data_model:
+            smart_data_model = building_data
+            is_valid, error_message = Building.validate_smart_data_model(smart_data_model)
+            if not is_valid:
+                return jsonify({"error": error_message}), 400
+        else:
+            error_messages = []
+
+            for field in ['id', 'type', 'address', 'category']:
+                if field not in building_data:
+                    error_messages.append(f"{field} is missing")
+
+            if error_messages:
+                return jsonify({"errors": error_messages}), 400
+
+            new_building_data = Building(
+                id=building_data['id'],
+                type=building_data['type'],
+                address=building_data['address'],
+                category=building_data['category'],
+                alternateName=building_data.get('alternateName'),
+                areaServed=building_data.get('areaServed'),
+                collapseRisk=building_data.get('collapseRisk'),
+                containedInPlace=building_data.get('containedInPlace'),
+                dataProvider=building_data.get('dataProvider'),
+                dateCreated=building_data.get('dateCreated'),
+                dateModified=building_data.get('dateModified'),
+                description=building_data.get('description'),
+                floorsAboveGround=building_data.get('floorsAboveGround'),
+                floorsBelowGround=building_data.get('floorsBelowGround'),
+                location=building_data.get('location'),
+                name=building_data.get('name'),
+                occupier=building_data.get('occupier'),
+                openingHours=building_data.get('openingHours'),
+                owner=building_data.get('owner'),
+                peopleCapacity=building_data.get('peopleCapacity'),
+                peopleOccupancy=building_data.get('peopleOccupancy'),
+                refMap=building_data.get('refMap'),
+                seeAlso=building_data.get('seeAlso'),
+                source=building_data.get('source')
+            )
+
+            smart_data_model = new_building_data.to_smart_data_model()
+
+        send_to_kong("Building", smart_data_model)  
+        return smart_data_model, 201
+
 @ns_smart_data_models.route('/dataModel.Agrifood')
 class AgrifoodResource(Resource):
     @ns_smart_data_models.response(200, 'AgriFood model data successfully retrieved.')
@@ -1256,7 +1417,9 @@ class AgrifoodResource(Resource):
                 "type": "@type",
                 "waterSource": "https://smartdatamodels.org/dataModel.Agrifood/waterSource",
                 "weight": "https://smartdatamodels.org/dataModel.Agrifood/weight",
-                "workRecord": "https://smartdatamodels.org/dataModel.Agrifood/workRecord"
+                "workRecord": "https://smartdatamodels.org/dataModel.Agrifood/workRecord",
+                "Person": "https://smartdatamodels.org/dataModel.Organization/Person",
+
             }
         }
 
