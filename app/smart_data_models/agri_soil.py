@@ -55,7 +55,7 @@ class AgriSoil(ModelBase):
             "type": self.type
         }
 
-        if self.dateCreated:
+        if self.date_created:
             agri_soil_data["dateCreated"] = {
                 "type": "Property",
                 "value": {
@@ -64,7 +64,7 @@ class AgriSoil(ModelBase):
                 }
             }
 
-        if self.dateModified:
+        if self.date_modified:
             agri_soil_data["dateModified"] = {
                 "type": "Property",
                 "value": {
@@ -78,7 +78,7 @@ class AgriSoil(ModelBase):
                 "value": self.name
             }
 
-        if self.alternateName:
+        if self.alternate_name:
             agri_soil_data["alternateName"] = {
                 "value": self.alternate_name
             }
@@ -88,7 +88,7 @@ class AgriSoil(ModelBase):
                 "value": self.description
             }
 
-        if self.agroVocConcept:
+        if self.agro_voc_concept:
             agri_soil_data["agroVocConcept"] = {
                 "type": "Property",
                 "value": {
@@ -97,12 +97,12 @@ class AgriSoil(ModelBase):
                 }
             }
 
-        if self.seeAlso:
+        if self.see_also:
             agri_soil_data["seeAlso"] = {
                 "value": self.see_also.split(',') if isinstance(self.see_also, str) else self.see_also
             }
 
-        if self.relatedSource:
+        if self.related_source:
             agri_soil_data["relatedSource"] = {
                 "value": [
                     {
@@ -112,7 +112,7 @@ class AgriSoil(ModelBase):
                 ]
             }
 
-        if self.hasAgriProductType:
+        if self.has_agri_product_type:
             agri_soil_data["hasAgriProductType"] = {
                 "type": "Relationship",
                 "object": self.has_agri_product_type.split(',') if isinstance(self.has_agri_product_type, str) else self.has_agri_product_type
