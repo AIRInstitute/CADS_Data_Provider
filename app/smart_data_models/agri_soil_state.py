@@ -30,11 +30,11 @@ class AgriSoilState(ModelBase):
             - density_timestamp (str, optional): The timestamp when the density was measured.
     """
     
-    def __init__(self, date_of_measurement, acidity, acidity_unit, acidity_timestamp,  humus, humus_unit, humus_timestamp, electrical_conductivity=None, density=None,
+    def __init__(self, id, date_of_measurement, acidity, acidity_unit, acidity_timestamp,  humus, humus_unit, humus_timestamp, electrical_conductivity=None, density=None,
                  has_agri_soil=None, has_agri_parcel=None, has_agri_greenhouse=None, date_created=None, date_modified=None,
                  electrical_conductivity_unit=None, electrical_conductivity_timestamp=None,
                  density_unit=None, density_timestamp=None):    
-        self.id = generate_urn("AgriSoilState")
+        self.id = id
         self.type = "AgriSoilState"       
         self.date_created = date_created or datetime.utcnow()
         self.date_modified = date_modified or datetime.utcnow()
@@ -69,34 +69,44 @@ class AgriSoilState(ModelBase):
         Returns:
             A dictionary representing the current Smart Data Model.
         """
-        agri_soil_state_data = {
+        agri_carbon_footprint_data = {
             "id": self.id,
-            "type": self.type,
-            "dateCreated": {
+            "type": self.type
+        }
+
+        if self.dateCreated:
+            agri_carbon_footprint_data["dateCreated"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_created
                 }
-            },
-            "dateModified": {
+            }
+
+        if self.dateModified:
+            agri_carbon_footprint_data["dateModified"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_modified
                 }
-            },
-            "dateOfMeasurement": {
+            }
+
+        if self.dateOfMeasurement:
+            agri_carbon_footprint_data["dateOfMeasurement"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_of_measurement
                 }
-            },
-            "acidity": {
+            }
+
+        # Asumo que si hay un valor, todos los subatributos también tendrán valores. Si no es el caso, se deben hacer comprobaciones adicionales.
+        if self.acidity:
+            agri_carbon_footprint_data["acidity"] = {
                 "type": "Property",
                 "value": self.acidity,
-                "unitCode":  self.acidity_unit,
+                "unitCode": self.acidity_unit,
                 "timestamp": {
                     "type": "Property",
                     "value": {
@@ -104,11 +114,13 @@ class AgriSoilState(ModelBase):
                         "@value": self.acidity_timestamp
                     }
                 }
-            },
-            "electricalConductivity": {
+            }
+
+        if self.electrical_conductivity:
+            agri_carbon_footprint_data["electricalConductivity"] = {
                 "type": "Property",
                 "value": self.electrical_conductivity,
-                "unitCode":  self.electrical_conductivity_unit,
+                "unitCode": self.electrical_conductivity_unit,
                 "timestamp": {
                     "type": "Property",
                     "value": {
@@ -116,11 +128,13 @@ class AgriSoilState(ModelBase):
                         "@value": self.electrical_conductivity_timestamp
                     }
                 }
-            },
-            "density":  {
+            }
+
+        if self.density:
+            agri_carbon_footprint_data["density"] = {
                 "type": "Property",
                 "value": self.density,
-                "unitCode":  self.density_unit,
+                "unitCode": self.density_unit,
                 "timestamp": {
                     "type": "Property",
                     "value": {
@@ -128,11 +142,13 @@ class AgriSoilState(ModelBase):
                         "@value": self.density_timestamp
                     }
                 }
-            },
-            "humus": {
+            }
+
+        if self.humus:
+            agri_carbon_footprint_data["humus"] = {
                 "type": "Property",
                 "value": self.humus,
-                "unitCode":  self.humus_unit,
+                "unitCode": self.humus_unit,
                 "timestamp": {
                     "type": "Property",
                     "value": {
@@ -140,22 +156,28 @@ class AgriSoilState(ModelBase):
                         "@value": self.humus_timestamp
                     }
                 }
-            },
-            "hasAgriSoil": {
+            }
+
+        if self.has_agri_soil:
+            agri_carbon_footprint_data["hasAgriSoil"] = {
                 "type": "Relationship",
                 "object": self.has_agri_soil
-            },
-            "hasAgriParcel": {
+            }
+
+        if self.has_agri_parcel:
+            agri_carbon_footprint_data["hasAgriParcel"] = {
                 "type": "Relationship",
                 "object": self.has_agri_parcel
-            },
-             "hasAgriGreenhouse": {
+            }
+
+        if self.has_agri_greenhouse:
+            agri_carbon_footprint_data["hasAgriGreenhouse"] = {
                 "type": "Relationship",
                 "object": self.has_agri_greenhouse
-            } 
-        }
+            }
 
-        return agri_soil_state_data
+        return agri_carbon_footprint_data
+
 
     def validate_smart_data_model(data):
         required_fields = ['dateCreated', 'dateModified', 'dateOfMeasurement', 'acidity', 'humus']

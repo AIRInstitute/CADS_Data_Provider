@@ -13,3 +13,4 @@ app/config.py
 flask_session/
 participant_status.py
 *.p12
+data_generator2.py

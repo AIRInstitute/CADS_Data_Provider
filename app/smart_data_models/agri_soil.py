@@ -22,10 +22,10 @@ class AgriSoil(ModelBase):
     """
 
     
-    def __init__(self, name, date_created=None, date_modified=None, alternate_name=None,
+    def __init__(self, id, name, date_created=None, date_modified=None, alternate_name=None,
                  description=None, agro_voc_concept=None, see_also=None, related_source=None, 
                  has_agri_product_type=None):
-        self.id = generate_urn("AgriSoil")
+        self.id = id
         self.type = "AgriSoil"   
         self.name = name
         self.date_created = date_created or datetime.utcnow()
@@ -52,55 +52,74 @@ class AgriSoil(ModelBase):
         """
         agri_soil_data = {
             "id": self.id,
-            "type": self.type,
-            "dateCreated": {
+            "type": self.type
+        }
+
+        if self.dateCreated:
+            agri_soil_data["dateCreated"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_created
                 }
-            },
-            "dateModified": {
+            }
+
+        if self.dateModified:
+            agri_soil_data["dateModified"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_modified
                 }
-            },
-            "name":  {
+            }
+
+        if self.name:
+            agri_soil_data["name"] = {
                 "value": self.name
-            },
-            "alternateName": {
+            }
+
+        if self.alternateName:
+            agri_soil_data["alternateName"] = {
                 "value": self.alternate_name
-            },
-            "description": {
+            }
+
+        if self.description:
+            agri_soil_data["description"] = {
                 "value": self.description
-            },
-            "agroVocConcept": {
+            }
+
+        if self.agroVocConcept:
+            agri_soil_data["agroVocConcept"] = {
                 "type": "Property",
                 "value": {
                     "@type": "URL",
                     "@value": self.agro_voc_concept
                 }
-            },
-            "seeAlso": {
+            }
+
+        if self.seeAlso:
+            agri_soil_data["seeAlso"] = {
                 "value": self.see_also.split(',') if isinstance(self.see_also, str) else self.see_also
-            },
-            "relatedSource": {
+            }
+
+        if self.relatedSource:
+            agri_soil_data["relatedSource"] = {
                 "value": [
                     {
                         "application": self.related_source.split(',') if isinstance(self.related_source, str) else self.related_source,
                         "applicationEntityId": "app:soil1"
                     }
                 ]
-            },
-            "hasAgriProductType": {
+            }
+
+        if self.hasAgriProductType:
+            agri_soil_data["hasAgriProductType"] = {
                 "type": "Relationship",
-                "object": self.has_agri_product_type.split(',') if isinstance(self.has_agri_product_type, str) else self.has_agri_product_type,
-            },
-        }
+                "object": self.has_agri_product_type.split(',') if isinstance(self.has_agri_product_type, str) else self.has_agri_product_type
+            }
 
         return agri_soil_data
+
 
 
     def validate_smart_data_model(data):

@@ -34,12 +34,12 @@ class AgriParcel(ModelBase):
             - irrigation_system_type (str, optional): The type of irrigation system on the parcel.
     """
 
-    def __init__(self, location, type_location, area, description, category, belongs_to, has_agri_soil, date_created=None,
+    def __init__(self, id, location, type_location, area, description, category, belongs_to, has_agri_soil, date_created=None,
                  date_modified=None, related_source=None, see_also=None, owned_by=None, has_agri_parcel_parent=None,
                  has_agri_parcel_children=None, has_agri_crop=None, has_air_quality_observed=None, crop_status=None,
                  last_planted_at=None, has_device=None, soil_texture_type=None, irrigation_system_type=None):
         
-        self.id = generate_urn("AgriParcel")
+        self.id = id
         self.type = "AgriParcel"       
         self.date_created = date_created or datetime.utcnow()
         self.date_modified = date_modified or datetime.utcnow()
@@ -78,101 +78,102 @@ class AgriParcel(ModelBase):
         """
         agri_parcel_data = {
             "id": self.id,
-            "type": self.type,
-            "dateCreated": {
+            "type": self.type
+        }
+
+        # A continuación, se verifica cada atributo antes de añadirlo al diccionario:
+        if self.date_created:
+            agri_parcel_data["dateCreated"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_created
                 }
-            },
-            "dateModified": {
+            }
+
+        if self.date_modified:
+            agri_parcel_data["dateModified"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_modified
                 }
-            },
-            "location": {
+            }
+
+        if self.type_location and self.location:
+            agri_parcel_data["location"] = {
                 "type": "GeoProperty",
                 "value": {
                     "type": self.type_location,
                     "coordinates": self.location
                 }
-            },
-            "area": {
-                "value": self.area
-            },
-            "description": {
-                "value": self.description
-            },
-            "category": {
-                "value": self.category
-            },
-            "relatedSource": {
+            }
+
+        if self.area:
+            agri_parcel_data["area"] = {"value": self.area}
+
+        if self.description:
+            agri_parcel_data["description"] = {"value": self.description}
+
+        if self.category:
+            agri_parcel_data["category"] = {"value": self.category}
+
+        if self.related_source:
+            agri_parcel_data["relatedSource"] = {
                 "value": [
                     {
                         "application": self.related_source.split(',') if isinstance(self.related_source, str) else self.related_source,
                         "applicationEntityId": "app:parcel1"
                     }
                 ]
-            },
-            "seeAlso": {
+            }
+
+        if self.see_also:
+            agri_parcel_data["seeAlso"] = {
                 "value": self.see_also.split(',') if isinstance(self.see_also, str) else self.see_also
-            },
-            "belongsTo": {
-                "type": "Relationship",
-                "object": self.belongs_to
-            },
-            "ownedBy": {
-                "type": "Relationship",
-                "object": self.owned_by
-            },
-            "hasAgriParcelParent":  {
-                "type": "Relationship",
-                "object": self.has_agri_parcel_parent
-            },
-            "hasAgriParcelChildren": {
+            }
+
+        # Similar checks for the remaining attributes:
+        for attr, key in [
+            (self.belongs_to, "belongsTo"),
+            (self.owned_by, "ownedBy"),
+            (self.has_agri_parcel_parent, "hasAgriParcelParent"),
+            (self.has_agri_crop, "hasAgriCrop"),
+            (self.has_air_quality_observed, "hasAirQualityObserved"),
+            (self.crop_status, "cropStatus"),
+            (self.has_agri_soil, "hasAgriSoil"),
+            (self.soil_texture_type, "soilTextureType"),
+            (self.irrigation_system_type, "irrigationSystemType")
+        ]:
+            if attr:
+                agri_parcel_data[key] = {
+                    "type": "Relationship" if "has" in key or "belongsTo" in key or "ownedBy" in key else "Property",
+                    "object": attr if "has" in key or "belongsTo" in key or "ownedBy" in key else {"value": attr}
+                }
+
+        if self.has_agri_parcel_children:
+            agri_parcel_data["hasAgriParcelChildren"] = {
                 "type": "Relationship",
                 "object": self.has_agri_parcel_children.split(',') if isinstance(self.has_agri_parcel_children, str) else self.has_agri_parcel_children
-            },
-            "hasAgriCrop": {
-                "type": "Relationship",
-                "object": self.has_agri_crop
-            },
-            "hasAirQualityObserved":{
-                "type": "Relationship",
-                "object": self.has_air_quality_observed
-            },
-            "cropStatus": {
-                "value": self.crop_status
-            },
-            "lastPlantedAt": {
+            }
+
+        if self.last_planted_at:
+            agri_parcel_data["lastPlantedAt"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.last_planted_at
                 }
-            },
-            "hasAgriSoil":  {
-                "type": "Relationship",
-                "object": self.has_agri_soil
-            },
-           "hasDevice": {
+            }
+
+        if self.has_device:
+            agri_parcel_data["hasDevice"] = {
                 "type": "Relationship",
                 "object": self.has_device.split(',') if isinstance(self.has_device, str) else self.has_device
-            },
-            "soilTextureType": {
-                "type": "Property",
-                "value": self.soil_texture_type
-            },
-            "irrigationSystemType": {
-                "type": "Property",
-                "value": self.irrigation_system_type
-            },
-        }
+            }
 
         return agri_parcel_data
+
 
 
     def validate_smart_data_model(data):

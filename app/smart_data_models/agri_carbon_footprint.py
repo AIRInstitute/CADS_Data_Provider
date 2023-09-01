@@ -12,7 +12,7 @@ class AgriCarbonFootPrint(ModelBase):
         Attributes:
             - has_agri_crop (str, optional): Represents the relationship with the crop.
             - has_agri_parcel (str, optional): Represents the relationship with the agricultural parcel.
-            - has_agri_yield (str, optional): Represents the relationship with the agricultural yield.
+            - has_agri_yeld (str, optional): Represents the relationship with the agricultural yeld.
             - carbon_footprint_value (float): The value of the carbon footprint.
             - carbon_footprint_accuracy_percent (float, optional): The accuracy percentage of the carbon footprint value.
             - carbon_footprint_min_value (float, optional): The minimum value of the carbon footprint.
@@ -21,15 +21,15 @@ class AgriCarbonFootPrint(ModelBase):
             - estimation_end_at (datetime): The end date of the estimation period.
     """
 
-    def __init__(self, carbon_footprint_value, estimation_start_at, estimation_end_at,
-                 has_agri_crop=None, has_agri_parcel=None, has_agri_yield=None,
+    def __init__(self, id, carbon_footprint_value, estimation_start_at, estimation_end_at,
+                 has_agri_crop=None, has_agri_parcel=None, has_agri_yeld=None,
                  carbon_footprint_accuracy_percent=None, carbon_footprint_min_value=None,
                  carbon_footprint_unit_text="Tons"):
-        self.id = generate_urn("AgriCarbonFootprint")
+        self.id = id
         self.type = "AgriCarbonFootprint"
         self.has_agri_crop = has_agri_crop
         self.has_agri_parcel = has_agri_parcel
-        self.has_agri_yield = has_agri_yield
+        self.has_agri_yeld = has_agri_yeld
         self.carbon_footprint_value = carbon_footprint_value
         self.carbon_footprint_accuracy_percent = carbon_footprint_accuracy_percent
         self.carbon_footprint_min_value = carbon_footprint_min_value
@@ -53,19 +53,27 @@ class AgriCarbonFootPrint(ModelBase):
         agri_carbon_footprint_data = {
             "id": self.id,
             "type": self.type,
-            "hasAgriCrop": {
+        }
+        if self.has_agri_crop:
+            agri_carbon_footprint_data["hasAgriCrop"] = {
                 "type": "Relationship",
                 "object": self.has_agri_crop
-            },
-            "hasAgriParcel": {
+            }
+
+        if self.has_agri_parcel:
+            agri_carbon_footprint_data["hasAgriParcel"] = {
                 "type": "Relationship",
                 "object": self.has_agri_parcel
-            },
-            "hasAgriYield": {
+            }
+
+        if self.has_agri_yeld:
+            agri_carbon_footprint_data["hasAgriYeld"] = {
                 "type": "Relationship",
-                "object": self.has_agri_yield
-            },
-            "carbonFootprint": {
+                "object": self.has_agri_yeld
+            }
+
+        if self.carbon_footprint_value:
+            agri_carbon_footprint_data["carbonFootprint"] = {
                 "type": "Property",
                 "value": {
                     "value": self.carbon_footprint_value,
@@ -73,22 +81,25 @@ class AgriCarbonFootPrint(ModelBase):
                     "minValue": self.carbon_footprint_min_value,
                     "unitText": self.carbon_footprint_unit_text
                 }
-            },
-            "estimationStartAt": {
+            }
+
+        if self.estimation_start_at:
+            agri_carbon_footprint_data["estimationStartAt"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.estimation_start_at
                 }
-            },
-            "estimationEndAt": {
+            }
+
+        if self.estimation_end_at:
+            agri_carbon_footprint_data["estimationEndAt"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.estimation_end_at
                 }
             }
-        }
         return agri_carbon_footprint_data
 
 

@@ -26,11 +26,11 @@ class AgriCrop(ModelBase):
             - watering_frequency (int, optional): The frequency at which the crop should be watered in days.
     """
     
-    def __init__(self, name, has_agri_soil, planting_from, date_created=None, date_modified=None,
+    def __init__(self, id, name, has_agri_soil, planting_from, date_created=None, date_modified=None,
                  alternate_name=None, agro_voc_concept=None, see_also=None, description=None,
                  related_source=None, has_agri_fertiliser=None, has_agri_pest=None,
                  harvesting_interval=None, watering_frequency=None):
-        self.id = generate_urn("AgriCrop")
+        self.id = id
         self.type = "AgriCrop"
         self.name = name
         self.date_created = date_created or datetime.utcnow()
@@ -56,65 +56,92 @@ class AgriCrop(ModelBase):
     def to_smart_data_model(self):
         """
         This method converts the current object into a dictionary that adheres to the Smart Data Model standard.
-        
+
         Returns:
             A dictionary representing the current Smart Data Model.
         """
         agri_crop_data = {
             "id": self.id,
-            "type": self.type,
-            "dateCreated": {
+            "type": self.type
+        }
+
+        if self.date_created:
+            agri_crop_data["dateCreated"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_created
                 }
-            },
-            "dateModified": {
+            }
+
+        if self.date_modified:
+            agri_crop_data["dateModified"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_modified
                 }
-            },
-            "name": self.name,
-            "alternateName": self.alternate_name,
-            "agroVocConcept": {
+            }
+
+        if self.name:
+            agri_crop_data["name"] = self.name
+
+        if self.alternate_name:
+            agri_crop_data["alternateName"] = self.alternate_name
+
+        if self.agro_voc_concept:
+            agri_crop_data["agroVocConcept"] = {
                 "type": "Property",
                 "value": {
                     "@type": "URL",
                     "@value": self.agro_voc_concept
                 }
-            },
-            "description": {
+            }
+
+        if self.description:
+            agri_crop_data["description"] = {
                 "value": self.description
-            },
-            "relatedSource": {
+            }
+
+        if self.related_source:
+            agri_crop_data["relatedSource"] = {
                 "value": [
                     {
                         "application": self.related_source,
                         "applicationEntityId": "app:crop1"
                     }
                 ]
-            },
-            "hasAgriSoil": {
+            }
+
+        if self.has_agri_soil:
+            agri_crop_data["hasAgriSoil"] = {
                 "type": "Relationship",
                 "object": self.has_agri_soil.split(',') if isinstance(self.has_agri_soil, str) else self.has_agri_soil
-            },
-            "hasAgriFertiliser": {
+            }
+
+        if self.has_agri_fertiliser:
+            agri_crop_data["hasAgriFertiliser"] = {
                 "type": "Relationship",
                 "object": self.has_agri_fertiliser.split(',') if isinstance(self.has_agri_fertiliser, str) else self.has_agri_fertiliser
-            },
-            "hasAgriPest": {
+            }
+
+        if self.has_agri_pest:
+            agri_crop_data["hasAgriPest"] = {
                 "type": "Relationship",
                 "object": self.has_agri_pest.split(',') if isinstance(self.has_agri_pest, str) else self.has_agri_pest
-            },
-            "plantingFrom": {"value": self.planting_from},
-            "harvestingInterval": {"value": self.harvesting_interval},
-            "wateringFrequency": {"value": self.watering_frequency}
-        }
+            }
+
+        if self.planting_from:
+            agri_crop_data["plantingFrom"] = {"value": self.planting_from}
+
+        if self.harvesting_interval:
+            agri_crop_data["harvestingInterval"] = {"value": self.harvesting_interval}
+
+        if self.watering_frequency:
+            agri_crop_data["wateringFrequency"] = {"value": self.watering_frequency}
 
         return agri_crop_data
+
 
 
     def validate_smart_data_model(data):

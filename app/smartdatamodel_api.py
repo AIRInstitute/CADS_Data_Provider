@@ -13,12 +13,11 @@ from app.smart_data_models.agri_parcel_operation import AgriParcelOperation
 from app.smart_data_models.agri_parcel_record import AgriParcelRecord
 from app.smart_data_models.agri_soil import AgriSoil
 from app.smart_data_models.agri_soil_state import AgriSoilState
-from app.smart_data_models.agri_yield import AgriYield
+from app.smart_data_models.agri_yeld import AgriYeld, AgriYeld
 from app.smart_data_models.building import Building
 from app.smart_data_models.person import Person
 from app.utils import api_key_required, send_to_kong
 from flask_restx import Namespace, Resource, fields
-from app import RelationshipField
 
 smartdata_blueprint = Blueprint("smart_data", __name__)
 
@@ -36,10 +35,11 @@ def get_models():
             'AgriParcelRecord': agri_parcel_record_model,
             'AgriSoil': agri_soil_model,
             'AgriSoilState': agri_soil_state_model,
-            'AgriYield': agri_yield_model,
+            'AgriYeld': agri_yeld_model,
             'AgriCarbonFootprint': agri_carbon_footprint_model}
 
 agri_farm_model = ns_smart_data_models.model('AgriFarm', {
+    'id': fields.String(required=True, description='Unique Identifier for the farm', example="urn:ngsi-ld:AgriFarm:12345"),
     'name': fields.String(required=True, description='Name of the farm', example="Wheat farm"),
     'location': fields.String(required=True, description='Location of the farm', example="101,0"),
     'type_location': fields.String(required=True, description='Type location of the farm', example="Point"),
@@ -78,6 +78,7 @@ class AgriFarmResource(Resource):
             if not is_valid:
                 return jsonify({"error": error_message}), 400   
         else:
+            id = farm_data.get('id')
             name = farm_data.get('name')
             location_str = farm_data.get('location')
             type_location = farm_data.get('type_location')
@@ -93,6 +94,9 @@ class AgriFarmResource(Resource):
             land_location_type = farm_data.get('land_location_type')
 
             error_messages = []
+            if not id:
+                logging.info("id")
+                error_messages.append("Id is missing")
             if not name:
                 logging.info("name")
                 error_messages.append("Name is missing")
@@ -145,6 +149,7 @@ class AgriFarmResource(Resource):
             owned_by = farm_data.get('owned_by')
             has_building = farm_data.get('has_building')
             new_farm_data = AgriFarm(
+                id=id,
                 name=name,
                 location= location,
                 location_type = type_location,
@@ -176,6 +181,7 @@ season_model = ns_smart_data_models.model('Season', {
 
 
 agri_crop_model = ns_smart_data_models.model('AgriCrop', {
+    'id': fields.String(required=True, description='Unique Identifier for the Crop', example="urn:ngsi-ld:AgriCrop:12345"),
     'date_created': fields.DateTime(required=True, description='Date created', example="2017-01-01T01:20:00Z"),
     'date_modified': fields.DateTime(required=True, description='Date modified', example="2017-05-04T12:30:00Z"),
     'name': fields.String(required=True, description='Crop name', example="Wheat"),
@@ -207,11 +213,15 @@ class AgriCropResource(Resource):
             if not is_valid:
                 return jsonify({"error": error_message}), 400
         else:
+            id = crop_data.get('id')
             name = crop_data.get('name')
             has_agri_soil_str = crop_data.get('has_agri_soil')
             planting_from_str = crop_data.get('planting_from')
 
             error_messages = []
+            if not id:
+                logging.info("id")
+                error_messages.append("Id is missing")
             if not name:
                 logging.append("Name")
                 error_messages.append("Name is missing")
@@ -246,6 +256,7 @@ class AgriCropResource(Resource):
             watering_frequency = crop_data.get('watering_frequency')
 
             new_crop = AgriCrop(
+                id=id,
                 name=name,
                 alternate_name=alternate_name,
                 agro_voc_concept=agro_voc_concept,
@@ -269,6 +280,7 @@ class AgriCropResource(Resource):
     
 
 agri_greenhouse_model = ns_smart_data_models.model('AgriGreenHouse', {
+    'id': fields.String(required=True, description='Unique Identifier for the greenhouse', example="urn:ngsi-ld:AgriGreenhouse:12345"),
     'relative_humidity': fields.Float(required=True, description='Relative humidity', example=45.0),
     'co2': fields.Float(required=True, description='CO2', example=400.0),
     'date_created': fields.DateTime(description='Date created', example="2023-01-01T01:20:00Z"),
@@ -302,10 +314,13 @@ class AgriGreenHouseResource(Resource):
             if not is_valid:
                 return jsonify({"error": error_message}), 400
         else:
+            id = greenhouse_data.get('id')
             relative_humidity = greenhouse_data.get('relative_humidity')
             co2 = greenhouse_data.get('co2')
             error_messages = []
-
+            if not id:
+                logging.info("id")
+                error_messages.append("Id is missing")
             if not relative_humidity:
                 logging.info("relative_humidity")
                 error_messages.append("Relative humidity is missing")
@@ -343,6 +358,7 @@ class AgriGreenHouseResource(Resource):
             
 
             new_greenhouse = AgriGreenHouse(
+                id=id,
                 date_created=date_created,
                 date_modified=date_modified,
                 owned_by=owned_by,
@@ -370,6 +386,7 @@ class AgriGreenHouseResource(Resource):
 
 
 agri_parcel_model = ns_smart_data_models.model('AgriParcel', {
+    'id': fields.String(required=True, description='Unique Identifier for the parcel', example="urn:ngsi-ld:AgriParcel:12345"),
     'date_created': fields.DateTime(required=True, description='Creation date', example="2017-01-01T01:20:00Z"),
     'date_modified': fields.DateTime(required=True, description='Modification date', example="2017-05-04T12:30:00Z"),
     'location': fields.String(required=True, description='Parcel location', example="100,0;101,0;101,1;100,1;100,0"),
@@ -408,6 +425,7 @@ class AgriParcelResource(Resource):
             if not is_valid:
                 return jsonify({"error": error_message}), 400
         else:
+            id = parcel_data.get('id')
             location_str = parcel_data.get('location')
             location_type = parcel_data.get('location_type')
             area = parcel_data.get('area')
@@ -417,6 +435,9 @@ class AgriParcelResource(Resource):
             has_agri_soil = parcel_data.get('has_agri_soil')
             
             error_messages = []
+            if not id:
+                logging.info("id")
+                error_messages.append("Id is missing")
             if not location_str:
                 error_messages.append("Location is missing")
             if not location_type:
@@ -465,6 +486,7 @@ class AgriParcelResource(Resource):
             irrigation_system_type = parcel_data.get('irrigation_system_type')
 
             new_parcel = AgriParcel(
+                id=id,
                 date_created=date_created,
                 date_modified=date_modified,
                 location= location,
@@ -494,6 +516,7 @@ class AgriParcelResource(Resource):
         return smart_data_model, 201
 
 agri_parcel_operation_model = ns_smart_data_models.model('AgriParcelOperation', {
+    'id': fields.String(required=True, description='Unique Identifier for the parcel operation', example="urn:ngsi-ld:AgriParcelOperation:12345"),
     'date_created': fields.DateTime(required=True, description='Creation date', example="2017-01-01T01:20:00Z"),
     'date_modified': fields.DateTime(required=True, description='Modification date', example="2017-05-04T12:30:00Z"),
     'related_source': fields.String(required=False, description='Related source', example="urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa931360259a,urn:ngsi-ld:AgriApp:72d9fb43-53f8-4ec8-a33c-fa941260259b"),
@@ -541,6 +564,7 @@ class AgriParcelOperationResource(Resource):
             if not is_valid:
                 return jsonify({"error": error_message}), 400
         else:
+            id = operation_data.get('id')
             has_agri_parcel = operation_data.get('has_agri_parcel')
             operation_type = operation_data.get('operation_type')
             description = operation_data.get('description')
@@ -563,6 +587,9 @@ class AgriParcelOperationResource(Resource):
 
             
             error_messages = []
+            if not id:
+                logging.info("id")
+                error_messages.append("Id is missing")
             if not has_agri_parcel:
                 error_messages.append("Has agri parcel is missing")
             if not operation_type:
@@ -617,6 +644,7 @@ class AgriParcelOperationResource(Resource):
             irrigation_record = operation_data.get('irrigation_record')
 
             new_operation = AgriParcelOperation(
+                id=id,
                 date_created=date_created,
                 date_modified=date_modified,
                 has_agri_parcel=has_agri_parcel,
@@ -654,6 +682,7 @@ class AgriParcelOperationResource(Resource):
         return smart_data_model, 201
 
 agri_parcel_record_model = ns_smart_data_models.model('AgriParcelRecord', {
+    'id': fields.String(required=True, description='Unique Identifier for the parcel record', example="urn:ngsi-ld:AgriParcelRecord:12345"),
     'date_created': fields.DateTime(required=True, example="2017-01-01T01:20:00Z"),
     'date_modified': fields.DateTime(required=True, example="2017-05-04T12:30:00Z"),
     'has_agri_parcel': fields.String(required=True, description='Associated Agri Parcel', example="urn:ngsi-ld:AgriParcel:2d5b8874-4474-11e8-8d6b-dbe14425b5e4"),
@@ -716,6 +745,7 @@ class AgriParcelRecordResource(Resource):
             if not is_valid:
                 return jsonify({"error": error_message}), 400
         else:
+            id = record_data.get('id')
             has_agri_parcel = record_data.get('has_agri_parcel')
             location_str = record_data.get('location')
             type_location = record_data.get('type_location')
@@ -729,6 +759,9 @@ class AgriParcelRecordResource(Resource):
             relative_humidity_timestamp = record_data.get('relative_humidity_timestamp')
 
             error_messages = []
+            if not id:
+                logging.info("id")
+                error_messages.append("Id is missing")
             if not has_agri_parcel:
                 error_messages.append("Has agri parcel is missing")
             if not location_str:
@@ -800,6 +833,7 @@ class AgriParcelRecordResource(Resource):
             timestamp = record_data.get('timestamp')
 
             new_record = AgriParcelRecord(
+                id=id,
                 date_created=date_created,
                 date_modified=date_modified,
                 has_agri_parcel=has_agri_parcel,
@@ -853,6 +887,7 @@ class AgriParcelRecordResource(Resource):
         return smart_data_model, 201
 
 agri_soil_model = ns_smart_data_models.model('AgriSoil', {
+    'id': fields.String(required=True, description='Unique Identifier for the soil', example="urn:ngsi-ld:AgriSoil:12345"),
     'date_created': fields.DateTime(required=True, example="2017-01-01T01:20:00Z"),
     'date_modified': fields.DateTime(required=True, example="2017-05-04T12:30:00Z"),
     'name': fields.String(required=True, description='Name', example="Clay"),
@@ -880,9 +915,13 @@ class AgriSoilResource(Resource):
             if not is_valid:
                 return jsonify({"error": error_message}), 400
         else:
+            id = soil_data.get('id')
             name = soil_data.get('name')
 
             error_messages = []
+            if not id:
+                logging.info("id")
+                error_messages.append("Id is missing")
             if not name:
                 error_messages.append("Name is missing")
             if error_messages:
@@ -898,6 +937,7 @@ class AgriSoilResource(Resource):
             
 
             new_soil = AgriSoil(
+                id=id,
                 date_created=date_created,
                 date_modified=date_modified,
                 name=name,
@@ -915,6 +955,7 @@ class AgriSoilResource(Resource):
         return smart_data_model, 201
 
 agri_soil_state_model = ns_smart_data_models.model('AgriSoilState', {
+    'id': fields.String(required=True, description='Unique Identifier for the Soil State', example="urn:ngsi-ld:AgriSoilState:12345"),
     'date_created': fields.DateTime(required=True, example="2017-01-01T01:20:00Z"),
     'date_modified': fields.DateTime(required=True, example="2017-05-04T12:30:00Z"),
     'date_of_measurement': fields.DateTime(required=True, description='Date of measurement', example="2017-01-01T01:20:00Z"),
@@ -952,6 +993,7 @@ class AgriSoilStateResource(Resource):
             if not is_valid:
                 return jsonify({"error": error_message}), 400
         else:
+            id = soil_state_data.get('id')
             date_of_measurement = soil_state_data.get('date_of_measurement')
             acidity = soil_state_data.get('acidity')
             acidity_unit_code = soil_state_data.get('acidity_unit_code')
@@ -962,6 +1004,9 @@ class AgriSoilStateResource(Resource):
 
 
             error_messages = []
+            if not id:
+                logging.info("id")
+                error_messages.append("Id is missing")
             if not date_of_measurement:
                 error_messages.append("Date of measurement is missing")
             if not acidity:
@@ -992,6 +1037,7 @@ class AgriSoilStateResource(Resource):
             
 
             new_soil_state = AgriSoilState(
+                id=id,
                 date_created=date_created,
                 date_modified=date_modified,
                 date_of_measurement=date_of_measurement,
@@ -1018,81 +1064,88 @@ class AgriSoilStateResource(Resource):
         return smart_data_model, 201
 
 
-agri_yield_model = ns_smart_data_models.model('AgriYield', {
+agri_yeld_model = ns_smart_data_models.model('AgriYeld', {
+    'id': fields.String(required=True, description='Unique Identifier for the farm', example="urn:ngsi-ld:AgriYeld:12345"),
     'has_agri_crop': fields.String(required=False, example="urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081"),
     'has_agri_parcel': fields.String(required=False, example="urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081"),
     'start_date_of_gathering_at': fields.DateTime(required=True, description='Start date of gathering', example="2017-01-01T01:20:00Z"),
     'end_date_of_gathering_at': fields.DateTime(required=True, description='End date of gathering', example="2017-01-01T01:20:00Z"),
-    'yield_value': fields.Float(required=True, description='Yield value', example=50),
-    'yield_max_value': fields.Float(required=False, description='Yield max value', example=70),
-    'yield_min_value': fields.Float(required=False, description='Yield min value', example=30),
-    'yield_unit_text': fields.String(required=False, description='Yield measurement unit', example='Tons per hectare')
+    'yeld_value': fields.Float(required=True, description='Yeld value', example=50),
+    'yeld_max_value': fields.Float(required=False, description='Yeld max value', example=70),
+    'yeld_min_value': fields.Float(required=False, description='Yeld min value', example=30),
+    'yeld_unit_text': fields.String(required=False, description='Yeld measurement unit', example='Tons per hectare')
 })
 
 
 @ns_smart_data_models.doc(security='Bearer Auth')
-@ns_smart_data_models.route('/agri_yield')
-class AgriYieldResource(Resource):
+@ns_smart_data_models.route('/agri_yeld')
+class AgriYeldResource(Resource):
     @api_key_required
-    @ns_smart_data_models.expect(agri_yield_model, validate=False)
-    @ns_smart_data_models.response(201, 'AgriYield successfully created.')
+    @ns_smart_data_models.expect(agri_yeld_model, validate=False)
+    @ns_smart_data_models.response(201, 'AgriYeld successfully created.')
     def post(self):
-        yield_data = request.get_json()
+        yeld_data = request.get_json()
 
-        is_smart_data_model = 'id' in yield_data and 'type' in yield_data
+        is_smart_data_model = 'id' in yeld_data and 'type' in yeld_data
         if is_smart_data_model:
-            smart_data_model = yield_data
-            is_valid, error_message = AgriYield.validate_smart_data_model(smart_data_model)
+            smart_data_model = yeld_data
+            is_valid, error_message = AgriYeld.validate_smart_data_model(smart_data_model)
             if not is_valid:
                 return jsonify({"error": error_message}), 400
         else:
-            start_date_of_gathering_at = yield_data.get('start_date_of_gathering_at')
-            end_date_of_gathering_at = yield_data.get('end_date_of_gathering_at')
-            yield_value = yield_data.get('yield_value')
-            yield_max_value = yield_data.get('yield_max_value')
-            yield_min_value = yield_data.get('yield_min_value')
-            yield_unit_text = yield_data.get('yield_unit_text')
+            id = yeld_data.get('id')
+            start_date_of_gathering_at = yeld_data.get('start_date_of_gathering_at')
+            end_date_of_gathering_at = yeld_data.get('end_date_of_gathering_at')
+            yeld_value = yeld_data.get('yeld_value')
+            yeld_max_value = yeld_data.get('yeld_max_value')
+            yeld_min_value = yeld_data.get('yeld_min_value')
+            yeld_unit_text = yeld_data.get('yeld_unit_text')
 
             error_messages = []
+            if not id:
+                logging.info("id")
+                error_messages.append("Id is missing")
             if not start_date_of_gathering_at:
                 error_messages.append("Start date of gathering is missing")
             if not end_date_of_gathering_at:
                 error_messages.append("End date of gathering is missing")
-            if not yield_value:
-                error_messages.append("Yield value is missing")
-            if not yield_max_value:
-                error_messages.append("Yield max value is missing")
-            if not yield_min_value:
-                error_messages.append("Yield min value is missing")
-            if not yield_unit_text:
-                error_messages.append("Yield unit value is missing")
+            if not yeld_value:
+                error_messages.append("Yeld value is missing")
+            if not yeld_max_value:
+                error_messages.append("Yeld max value is missing")
+            if not yeld_min_value:
+                error_messages.append("Yeld min value is missing")
+            if not yeld_unit_text:
+                error_messages.append("Yeld unit value is missing")
             if error_messages:
                 return jsonify({"errors": error_messages}), 400
-            has_agri_crop = yield_data.get('has_agri_crop')
-            has_agri_parcel = yield_data.get('has_agri_parcel')
+            has_agri_crop = yeld_data.get('has_agri_crop')
+            has_agri_parcel = yeld_data.get('has_agri_parcel')
 
             
 
-            new_yield = AgriYield(
+            new_yeld = AgriYeld(
+                id=id,
                 has_agri_crop=has_agri_crop,
                 has_agri_parcel=has_agri_parcel,
                 start_date_of_gathering_at=start_date_of_gathering_at,
                 end_date_of_gathering_at=end_date_of_gathering_at,
-                yield_value=yield_value,
-                yield_max_value=yield_max_value,
-                yield_min_value=yield_min_value,
-                yield_unit_text=yield_unit_text
+                yeld_value=yeld_value,
+                yeld_max_value=yeld_max_value,
+                yeld_min_value=yeld_min_value,
+                yeld_unit_text=yeld_unit_text
             )
 
-            smart_data_model = new_yield.to_smart_data_model()
+            smart_data_model = new_yeld.to_smart_data_model()
         
-        send_to_kong("AgriYield", smart_data_model)
+        send_to_kong("AgriYeld", smart_data_model)
         return smart_data_model, 201
 
 agri_carbon_footprint_model = ns_smart_data_models.model('AgriCarbonFootprint', {
+    'id': fields.String(required=True, description='Unique Identifier for the carbon footprint', example="urn:ngsi-ld:AgriCarbonFootprint:12345"),
     'has_agri_crop': fields.String(required=False, example="urn:ngsi-ld:AgriCrop:1ea0f120-4474-11e8-9919-672036642081"),
     'has_agri_parcel': fields.String(required=False, example="urn:ngsi-ld:AgriParcel:1ea0f120-4474-11e8-9919-672036642081"),
-    'has_agri_yield': fields.String(required=False, example="urn:ngsi-ld:AgriYield:1ea0f120-4474-11e8-9919-672036642081"),
+    'has_agri_yeld': fields.String(required=False, example="urn:ngsi-ld:AgriYeld:1ea0f120-4474-11e8-9919-672036642081"),
     'carbon_footprint_value': fields.Float(required=True, description='Carbon footprint value', example=5),
     'carbon_footprint_accuracy_percent': fields.Float(description='Carbon footprint accuracy percent', example=10),
     'carbon_footprint_min_value': fields.Float(description='Carbon footprint min value', example=30),
@@ -1117,6 +1170,7 @@ class AgriCarbonFootprintResource(Resource):
             if not is_valid:
                 return jsonify({"error": error_message}), 400
         else:
+            id = carbon_footprint_data.get('id')
             carbon_footprint_value = carbon_footprint_data.get('carbon_footprint_value')
             carbon_footprint_accuracy_percent = carbon_footprint_data.get('carbon_footprint_accuracy_percent')
             carbon_footprint_min_value = carbon_footprint_data.get('carbon_footprint_min_value')
@@ -1125,6 +1179,9 @@ class AgriCarbonFootprintResource(Resource):
             estimation_end_at = carbon_footprint_data.get('estimation_end_at')
 
             error_messages = []
+            if not id:
+                logging.info("id")
+                error_messages.append("Id is missing")
             if not carbon_footprint_value:
                 error_messages.append("Carbon footprint value is missing")
             if not carbon_footprint_accuracy_percent:
@@ -1141,16 +1198,17 @@ class AgriCarbonFootprintResource(Resource):
                 return jsonify({"errors": error_messages}), 400
             has_agri_crop = carbon_footprint_data.get('has_agri_crop')
             has_agri_parcel = carbon_footprint_data.get('has_agri_parcel')
-            has_agri_yield = carbon_footprint_data.get('has_agri_yield')
+            has_agri_yeld = carbon_footprint_data.get('has_agri_yeld')
             carbon_footprint_accuracy_percent = carbon_footprint_data.get('carbon_footprint_accuracy_percent')
             carbon_footprint_min_value = carbon_footprint_data.get('carbon_footprint_min_value')
             carbon_footprint_unit_text = carbon_footprint_data.get('carbon_footprint_unit_text')
 
 
             new_carbon_footprint_data = AgriCarbonFootPrint(
+                id=id,
                 has_agri_crop=has_agri_crop,
                 has_agri_parcel=has_agri_parcel,
-                has_agri_yield=has_agri_yield,
+                has_agri_yeld=has_agri_yeld,
                 carbon_footprint_value=carbon_footprint_value,
                 carbon_footprint_accuracy_percent=carbon_footprint_accuracy_percent,
                 carbon_footprint_min_value=carbon_footprint_min_value,
@@ -1183,7 +1241,7 @@ agri_app_model = ns_smart_data_models.model('AgriApp', {
     'relatedSource': fields.String(description='Related source for the app', example="https://relatedsource.example.com"),
     'seeAlso': fields.String(description='Further information for the app', example="https://seealso.example.com"),
     'source': fields.String(description='Source from where the app originated', example="https://source.example.com"),
-    'type': fields.String(required=True, description='Type of data model', example="AgriAppType"),
+    'type': fields.String(required=True, description='Type of data model', example="AgriApp"),
     'version': fields.String(description='Version of the app', example="1.0.0")
 })
 
@@ -1204,7 +1262,6 @@ class AgriAppResource(Resource):
                 return jsonify({"error": error_message}), 400
         else:
             error_messages = []
-
             if 'id' not in app_data:
                 error_messages.append("ID is missing")
             if 'type' not in app_data:
@@ -1242,7 +1299,7 @@ class AgriAppResource(Resource):
 
 building_model = ns_smart_data_models.model('Building', {
     'id': fields.String(required=True, description='Unique identifier of the building', example="urn:ngsi-ld:Building:1ea0f120-4474-11e8-9919-672036642081"),
-    'type': fields.String(required=True, description='NGSI Entity type', example="BuildingType"),
+    'type': fields.String(required=True, description='NGSI Entity type', example="Building"),
     'address': fields.String(description='The mailing address of the building', example="123 Brick Street"),
     'alternateName': fields.String(description='An alternative name for the building', example="Skyscraper X"),
     'areaServed': fields.String(description='The geographic area where the building is located', example="Downtown"),
@@ -1343,7 +1400,7 @@ person_model = ns_smart_data_models.model('Person', {
     'seeAlso': fields.List(fields.String, description='List of URIs pointing to additional resources about the item', example=["https://seealso.example.com"]),
     'source': fields.String(description='Original source of the entity data as a URL', example="https://source.example.com"),
     'telephone': fields.String(description='Telephone number', example="123-456-7890"),
-    'type': fields.String(required=True, description='Type of data model', example="PersonType")
+    'type': fields.String(required=True, description='Type of data model', example="Person")
 })
 
 
@@ -1415,7 +1472,7 @@ class AgrifoodResource(Resource):
                 "AgriSoil": "https://smartdatamodels.org/dataModel.Agrifood/AgriSoil",
                 "AgriSoilState": AGRI_SOIL_STATE_URL,
                 "AgriGreenhouse": "https://smartdatamodels.org/dataModel.Agrifood/AgriGreenhouse",
-                "AgriYield": AGRI_YIELD_URL,
+                "AgriYeld": AGRI_YIELD_URL,
                 "AgriCarbonFootprint": AGRI_CARBON_FOOTPRINT_URL,
                 "AgriApp": "https://smartdatamodels.org/dataModel.Agrifood/AgriApp",
                 "AgriPest": "https://smartdatamodels.org/dataModel.Agrifood/AgriPest",
@@ -1481,7 +1538,6 @@ class AgrifoodResource(Resource):
                 "reportedAt": "https://smartdatamodels.org/dataModel.Agrifood/reportedAt",
                 "result": "https://smartdatamodels.org/dataModel.Agrifood/result",
                 "seeAlso": "https://smartdatamodels.org/seeAlso",
-                "sex": "https://smartdatamodels.org/dataModel.Agrifood/sex",
                 "soilMoistureEC": "https://smartdatamodels.org/dataModel.Agrifood/soilMoistureEC",
                 "soilMoistureVwc": "https://smartdatamodels.org/dataModel.Agrifood/soilMoistureVwc",
                 "soilSalinity": "https://smartdatamodels.org/dataModel.Agrifood/soilSalinity",
@@ -1607,16 +1663,16 @@ class AgriSoilStateResource(Resource):
                 }
 
 
-@ns_smart_data_models.route('/dataModel.AgriYield/schema.json')
-class AgriYieldResource(Resource):
-    @ns_smart_data_models.response(200, 'AgriYield model schema successfully retrieved.')
+@ns_smart_data_models.route('/dataModel.AgriYeld/schema.json')
+class AgriYeldResource(Resource):
+    @ns_smart_data_models.response(200, 'AgriYeld model schema successfully retrieved.')
     def get(self):
         return {
                     "$schema": "http://json-schema.org/schema#",
                     "$schemaVersion": "0.0.4",
                     "$id": AGRI_YIELD_URL_SCHEMA,
-                    "title": "Smart Data Models - AgriYield",
-                    "description": "This entity contains a harmonised description of an agricultural yield, capturing data about the produced amount from crops. It is associated with the agricultural vertical and IoT applications.",
+                    "title": "Smart Data Models - AgriYeld",
+                    "description": "This entity contains a harmonised description of an agricultural yeld, capturing data about the produced amount from crops. It is associated with the agricultural vertical and IoT applications.",
                     "type": "object",
                     "allOf": [
                         {
@@ -1627,19 +1683,19 @@ class AgriYieldResource(Resource):
                             "type": {
                             "type": "string",
                             "enum": [
-                                "AgriYield"
+                                "AgriYeld"
                             ],
-                            "description": "Property. NGSI Entity Type. It has to be AgriYield."
+                            "description": "Property. NGSI Entity Type. It has to be AgriYeld."
                             },
                             "hasAgriCrop": {
                             "type": "string",
                             "format": "uri",
-                            "description": "Relationship. Reference to the AgriCrop related to this yield."
+                            "description": "Relationship. Reference to the AgriCrop related to this yeld."
                             },
                             "hasAgriParcel": {
                             "type": "string",
                             "format": "uri",
-                            "description": "Relationship. Reference to the AgriParcel where the yield was produced."
+                            "description": "Relationship. Reference to the AgriParcel where the yeld was produced."
                             },
                             "startDateOfGatheringAt": {
                             "type": "string",
@@ -1653,7 +1709,7 @@ class AgriYieldResource(Resource):
                             },
                             "yeld": {
                             "type": "object",
-                            "description": "Property. Information about the amount of produced yield.",
+                            "description": "Property. Information about the amount of produced yeld.",
                             "properties": {
                                 "value": {
                                 "type": "number"
@@ -1720,7 +1776,7 @@ class AgriCarbonFootprintResource(Resource):
                             "hasAgriYeld": {
                             "type": "string",
                             "format": "uri",
-                            "description": "Relationship. Reference to the AgriYield associated with this carbon footprint."
+                            "description": "Relationship. Reference to the AgriYeld associated with this carbon footprint."
                             },
                             "carbonFootprint": {
                             "type": "object",

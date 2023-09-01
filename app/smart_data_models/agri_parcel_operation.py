@@ -41,14 +41,14 @@ class AgriParcelOperation(ModelBase):
             gasoline_fuel_consumption_unit_text (str, optional): The unit of gasoline fuel consumption measurement.
     """
 
-    def __init__(self, has_agri_parcel, operation_type, description, result, planned_start_at, planned_end_at,
+    def __init__(self, id, has_agri_parcel, operation_type, description, result, planned_start_at, planned_end_at,
                  status, started_at, ended_at, reported_at, quantity, diesel_fuel_consumption,
                  diesel_fuel_consumption_max_value, diesel_fuel_consumption_min_value, diesel_fuel_consumption_unit_text,
                  gasoline_fuel_consumption,gasoline_fuel_consumption_max_value, gasoline_fuel_consumption_min_value, 
                  gasoline_fuel_consumption_unit_text, date_created=None, date_modified=None,
                  related_source=None, see_also=None, has_operator=None, has_agri_product_type=None, water_source=None,
                  work_order=None, work_record=None, irrigation_record=None):
-        self.id = generate_urn("AgriParcelOperation")
+        self.id =id
         self.type = "AgriParcelOperation"
         self.date_created = date_created or datetime.utcnow()
         self.date_modified = date_modified or datetime.utcnow()
@@ -91,146 +91,93 @@ class AgriParcelOperation(ModelBase):
     def to_smart_data_model(self):
         """
         This method converts the current object into a dictionary that adheres to the Smart Data Model standard.
-        
+
         Returns:
             A dictionary representing the current Smart Data Model.
         """
         agri_parcel_operation_data = {
             "id": self.id,
-            "type": self.type,
-            "dateCreated": {
-                "type": "Property",
-                "value": {
-                    "@type": "DateTime",
-                    "@value": self.date_created
-                }
-            },
-            "dateModified": {
-                "type": "Property",
-                "value": {
-                    "@type": "DateTime",
-                    "@value": self.date_modified
-                }
-            },
-            "relatedSource": {
-                "value": [
-                    {
-                        "application": self.related_source.split(',') if isinstance(self.related_source, str) else self.related_source,
-                        "applicationEntityId": "app:operation1"
-                    }
-                ]
-            },
-             "seeAlso": {
-                "value": self.see_also.split(',') if isinstance(self.see_also, str) else self.see_also 
-            },
-            "hasAgriParcel": {
-                "type": "Relationship",
-                "object": self.has_agri_parcel
-            },
-            "operationType": {
-                "value":self.operation_type
-            },
-            "description": {
-                "value": self.description
-            },
-            "result": {
-                "value":self.result
-            },
-            "plannedStartAt": {
-                "type": "Property",
-                "value": {
-                    "@type": "DateTime",
-                    "@value": self.planned_start_at
-                }
-            },
-            "plannedEndAt": {
-                "type": "Property",
-                "value": {
-                    "@type": "DateTime",
-                    "@value": self.planned_end_at
-                }
-            },
-            "status": {
-                "value":self.status
-            },
-            "hasOperator": {
-                "type": "Relationship",
-                "object": self.has_operator
-            },
-            "startedAt": {
-                "type": "Property",
-                "value": {
-                    "@type": "DateTime",
-                    "@value": self.started_at
-                }
-            },
-            "endedAt": {
-                "type": "Property",
-                "value": {
-                    "@type": "DateTime",
-                    "@value": self.ended_at
-                }
-            },
-            "reportedAt": {
-                "type": "Property",
-                "value": {
-                    "@type": "DateTime",
-                    "@value": self.reported_at
-                }
-            },
-            "hasAgriProductType": {
-                "type": "Relationship",
-                "object": self.has_agri_product_type
-            },
-            "quantity": {
-                "value":self.quantity
-            },
-             "waterSource": {
-                "value":self.water_source
-            },
-            "workOrder": {
-                "type": "Property",
-                "value": {
-                    "@type": "URL",
-                    "@value": self.work_order
-                }
-            },
-            "workRecord": {
-                "type": "Property",
-                "value": {
-                    "@type": "URL",
-                    "@value": self.work_record
-                }
-            },
-            "irrigationRecord": {
-                "type": "Property",
-                "value": {
-                    "@type": "URL",
-                    "@value": self.irrigation_record
-                }
-            },
-            "dieselFuelConsumption": {
-                "type": "Property",
-                "value": {
-                    "value": self.diesel_fuel_consumption,
-                    "maxValue": self.diesel_fuel_consumption_max_value,
-                    "minValue": self.diesel_fuel_consumption_min_value,
-                    "unitText": self.diesel_fuel_consumption_unit_text
-                }
-            },
-            "gasolineFuelConsumption": {
-                "type": "Property",
-                "value": {
-                    "value": self.gasoline_fuel_consumption,
-                    "maxValue": self.gasoline_fuel_consumption_max_value,
-                    "minValue": self.gasoline_fuel_consumption_min_value,
-                    "unitText": self.gasoline_fuel_consumption_unit_text
-                }
-            }
-            
+            "type": self.type
         }
 
+        # Helper function for datetime properties
+        def add_datetime_property(key, value):
+            if value:
+                agri_parcel_operation_data[key] = {
+                    "type": "Property",
+                    "value": {
+                        "@type": "DateTime",
+                        "@value": value
+                    }
+                }
+
+        # Handling datetime properties
+        datetime_props = ["dateCreated", "dateModified", "plannedStartAt", "plannedEndAt", "startedAt", "endedAt", "reportedAt"]
+        for prop in datetime_props:
+            attr_val = getattr(self, prop.lower())
+            add_datetime_property(prop, attr_val)
+
+        # Handling direct properties
+        direct_props = ["operationType", "description", "result", "status", "quantity", "waterSource"]
+        for prop in direct_props:
+            attr_val = getattr(self, prop.lower())
+            if attr_val:
+                agri_parcel_operation_data[prop] = {
+                    "value": attr_val
+                }
+
+        # Handling URL properties
+        url_props = ["workOrder", "workRecord", "irrigationRecord"]
+        for prop in url_props:
+            attr_val = getattr(self, prop.lower())
+            if attr_val:
+                agri_parcel_operation_data[prop] = {
+                    "type": "Property",
+                    "value": {
+                        "@type": "URL",
+                        "@value": attr_val
+                    }
+                }
+
+        # Handling complex properties
+        complex_props = [
+            ("dieselFuelConsumption", ["value", "maxValue", "minValue", "unitText"]),
+            ("gasolineFuelConsumption", ["value", "maxValue", "minValue", "unitText"])
+        ]
+
+        for prop, subprops in complex_props:
+            prop_data = {}
+            for subprop in subprops:
+                attr_val = getattr(self, f"{prop.lower()}_{subprop.lower()}")
+                if attr_val:
+                    prop_data[subprop] = attr_val
+            if prop_data:
+                agri_parcel_operation_data[prop] = {
+                    "type": "Property",
+                    "value": prop_data
+                }
+
+        # Handling relationship properties
+        relationships = ["hasAgriParcel", "hasOperator", "hasAgriProductType"]
+        for rel in relationships:
+            attr_val = getattr(self, rel.lower())
+            if attr_val:
+                agri_parcel_operation_data[rel] = {
+                    "type": "Relationship",
+                    "object": attr_val
+                }
+
+        # Handling list properties
+        list_props = ["relatedSource", "seeAlso"]
+        for prop in list_props:
+            attr_val = getattr(self, prop.lower())
+            if attr_val:
+                agri_parcel_operation_data[prop] = {
+                    "value": attr_val.split(',') if isinstance(attr_val, str) else attr_val
+                }
+
         return agri_parcel_operation_data
+
 
 
     def validate_smart_data_model(data):

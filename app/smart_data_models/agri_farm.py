@@ -26,10 +26,10 @@ class AgriFarm(ModelBase):
         - owned_by (str, optional): The owner of the farm.
         - has_building (str, optional): The building associated with the farm.
     """
-    def __init__(self, name, location,location_type, address_locality, address_country, address_street, contact_point_email, contact_point_telephone, has_agri_parcel, date_created=None, date_modified=None,
+    def __init__(self, id, name, location,location_type, address_locality, address_country, address_street, contact_point_email, contact_point_telephone, has_agri_parcel, date_created=None, date_modified=None,
                  description=None, related_source=None, see_also=None, land_location=None,land_location_type=None,
                  owned_by=None, has_building=None):
-        self.id = generate_urn("AgriFarm")
+        self.id = id
         self.type = "AgriFarm"
         self.name = name
         self.location_type = location_type
@@ -60,36 +60,47 @@ class AgriFarm(ModelBase):
     def to_smart_data_model(self):
         """
         This method converts the current object into a dictionary that adheres to the Smart Data Model standard.
-        
+
         Returns:
             A dictionary representing the current Smart Data Model.
         """
         agri_farm_data = {
             "id": self.id,
-            "type": self.type,
-            "dateCreated": {
+            "type": self.type
+        }
+
+        if self.date_created:
+            agri_farm_data["dateCreated"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_created
                 }
-            },
-            "dateModified": {
+            }
+
+        if self.date_modified:
+            agri_farm_data["dateModified"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_modified
                 }
-            },
-            "name": {
+            }
+
+        if self.name:
+            agri_farm_data["name"] = {
                 "type": "Property",
                 "value": self.name
-            },
-            "description": {
+            }
+
+        if self.description:
+            agri_farm_data["description"] = {
                 "type": "Property",
                 "value": self.description
-            },
-            "relatedSource": {
+            }
+
+        if self.related_source:
+            agri_farm_data["relatedSource"] = {
                 "type": "Property",
                 "value": [
                     {
@@ -97,57 +108,68 @@ class AgriFarm(ModelBase):
                         "applicationEntityId": "app:farm1"
                     }
                 ]
-            },
-            "seeAlso":  self.see_also,
-            "location": {
+            }
+
+        if self.see_also:
+            agri_farm_data["seeAlso"] = self.see_also
+
+        if self.location_type and self.location:
+            agri_farm_data["location"] = {
                 "type": "GeoProperty",
                 "value": {
                     "type": self.location_type,
                     "coordinates": self.location
                 }
-            },
-            "landLocation": {
+            }
+
+        if self.land_location_type and self.land_location:
+            agri_farm_data["landLocation"] = {
                 "type": "GeoProperty",
                 "value": {
                     "type": self.land_location_type,
                     "coordinates": self.land_location
                 }
-            },
-            "address": {
+            }
+
+        if self.address_locality or self.address_country or self.address_street:
+            agri_farm_data["address"] = {
                 "type": "Property",
                 "value": {
                     "addressLocality": self.address_locality,
                     "addressCountry": self.address_country,
                     "streetAddress": self.address_street
                 }
-            },
-            "contactPoint": {
+            }
+
+        if self.contact_point_email or self.contact_point_telephone:
+            agri_farm_data["contactPoint"] = {
                 "type": "Property",
                 "value": {
                     "email": self.contact_point_email,
                     "telephone": self.contact_point_telephone
                 }
-            },
-            "ownedBy": {
+            }
+
+        if self.owned_by:
+            agri_farm_data["ownedBy"] = {
                 "type": "Relationship",
                 "object": self.owned_by
-            },
-            "hasBuilding": {
+            }
+
+        if self.has_building:
+            agri_farm_data["hasBuilding"] = {
                 "type": "Relationship",
                 "object": self.has_building.split(',') if isinstance(self.has_building, str) else self.has_building
+            }
 
-            },
-            "hasAgriParcel": {
+        if self.has_agri_parcel:
+            agri_farm_data["hasAgriParcel"] = {
                 "type": "Relationship",
                 "object": self.has_agri_parcel.split(',') if isinstance(self.has_agri_parcel, str) else self.has_agri_parcel
-
-            },
-            
-
-            
-        }
+            }
 
         return agri_farm_data
+
 
     def validate_smart_data_model(data):
         required_fields = ['dateCreated', 'dateModified', 'name', 'location', 'address', 'contactPoint', 'hasAgriParcel']

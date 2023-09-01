@@ -58,7 +58,7 @@ class AgriParcelRecord(ModelBase):
     """
 
 
-    def __init__(self, has_agri_parcel, location, type_location, soil_temperature, soil_temperature_unit, air_temperature, air_temperature_unit, air_temperature_timestamp, relative_humidity, relative_humidity_unit, relative_humidity_timestamp, 
+    def __init__(self, id, has_agri_parcel, location, type_location, soil_temperature, soil_temperature_unit, air_temperature, air_temperature_unit, air_temperature_timestamp, relative_humidity, relative_humidity_unit, relative_humidity_timestamp, 
                  date_created=None, date_modified=None, related_source=None, see_also=None, soil_moisture_vwc=None,
                  soil_moisture_vwc_unit=None, soil_moisture_vwc_timestamp=None, depth=None, depth_unit=None,
                  soil_moisture_ec=None, soil_moisture_ec_unit=None, soil_moisture_ec_timestamp=None, 
@@ -70,7 +70,7 @@ class AgriParcelRecord(ModelBase):
 
 
        
-        self.id = generate_urn("AgriParcelRecord")
+        self.id = id
         self.type = "AgriParcelRecord"           
         self.date_created = date_created or datetime.utcnow()
         self.date_modified = date_modified or datetime.utcnow()
@@ -130,192 +130,111 @@ class AgriParcelRecord(ModelBase):
     def to_smart_data_model(self):
         """
         This method converts the current object into a dictionary that adheres to the Smart Data Model standard.
-
+        
         Returns:
             A dictionary representing the current Smart Data Model.
         """
         agri_parcel_record_data = {
             "id": self.id,
-            "type": self.type,
-            "dateCreated": {
+            "type": self.type
+        }
+
+
+        if self.date_created:
+            agri_parcel_record_data["dateCreated"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_created
                 }
-            },
-            "dateModified": {
+            }
+
+        if self.date_modified:
+            agri_parcel_record_data["dateModified"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_modified
                 }
-            },
-            "relatedSource": {
+            }
+
+        if self.related_source:
+            agri_parcel_record_data["relatedSource"] = {
                 "value": [
                     {
                         "application": self.related_source.split(',') if isinstance(self.related_source, str) else self.related_source,
                         "applicationEntityId": "app:record1"
                     }
                 ]
-            },
-            "seeAlso": {
+            }
+
+        if self.see_also:
+            agri_parcel_record_data["seeAlso"] = {
                 "value": self.see_also.split(',') if isinstance(self.see_also, str) else self.see_also
-            },
-            "hasAgriParcel": {
+            }
+
+        if self.has_agri_parcel:
+            agri_parcel_record_data["hasAgriParcel"] = {
                 "type": "Relationship",
                 "object": self.has_agri_parcel
-            },
-            "location": {
+            }
+
+        if self.type_location and self.location:
+            agri_parcel_record_data["location"] = {
                 "type": "GeoProperty",
                 "value": {
                     "type": self.type_location,
                     "coordinates": self.location
                 }
-            },
-            "soilTemperature": {
-                "type": "Property",
-                "value": self.soil_temperature,
-                "unitCode":  self.soil_temperature_unit
-            },
-            "timestamp": {
-                "type": "Property",
-                "value": {
-                    "@type": "DateTime",
-                    "@value": self.timestamp
-                }
-            },
-            "depth": {
-                "type": "Property",
-                "value": self.depth,
-                "unitCode":  self.depth_unit
-            },
-            "soilMoistureVWC": {
-                "type": "Property",
-                "value": self.soil_moisture_vwc,
-                "unitCode":  self.soil_moisture_vwc_unit
-            },
-            "soilMoistureEC": {
-                "type": "Property",
-                "value": self.soil_moisture_ec,
-                "unitCode":  self.soil_moisture_ec_unit,
-                "timestamp": {
+            }
+
+        for attr, unit, timestamp, key in [
+            (self.soil_temperature, self.soil_temperature_unit, None, "soilTemperature"),
+            (self.depth, self.depth_unit, None, "depth"),
+            (self.soil_moisture_vwc, self.soil_moisture_vwc_unit, None, "soilMoistureVWC"),
+            (self.soil_moisture_ec, self.soil_moisture_ec_unit, self.soil_moisture_ec_timestamp, "soilMoistureEC"),
+            (self.soil_salinity, self.soil_salinity_unit, self.soil_salinity_timestamp, "soilSalinity"),
+            (self.leaf_wetness, self.leaf_wetness_unit, self.leaf_wetness_timestamp, "leafWetness"),
+            (self.leaf_relative_humidity, self.leaf_relative_humidity_unit, self.leaf_relative_humidity_timestamp, "leafRelativeHumidity"),
+            (self.leaf_temperature, self.leaf_temperature_unit, self.leaf_temperature_timestamp, "leafTemperature"),
+            (self.air_temperature, self.air_temperature_unit, self.air_temperature_timestamp, "airTemperature"),
+            (self.solar_radiation, self.solar_radiation_unit, self.solar_radiation_timestamp, "solarRadiation"),
+            (self.relative_humidity, self.relative_humidity_unit, self.relative_humidity_timestamp, "relativeHumidity"),
+            (self.atmospheric_pressure, self.atmospheric_pressure_unit, self.atmospheric_pressure_timestamp, "atmosphericPressure"),
+        ]:
+            if attr:
+                agri_parcel_record_data[key] = {
                     "type": "Property",
-                    "value": {
-                        "@type": "DateTime",
-                        "@value": self.soil_moisture_ec_timestamp
-                    }
+                    "value": attr,
+                    "unitCode": unit
                 }
-            },
-            "soilSalinity": {
-                "type": "Property",
-                "value": self.soil_salinity,
-                "unitCode":  self.soil_salinity_unit,
-                "timestamp": {
-                    "type": "Property",
-                    "value": {
-                        "@type": "DateTime",
-                        "@value": self.soil_salinity_timestamp
+                if timestamp:
+                    agri_parcel_record_data[key]["timestamp"] = {
+                        "type": "Property",
+                        "value": {
+                            "@type": "DateTime",
+                            "@value": timestamp
+                        }
                     }
-                }
-            },
-            "leafWetness": {
-                "type": "Property",
-                "value": self.leaf_wetness,
-                "unitCode":  self.leaf_wetness_unit,
-                "timestamp": {
-                    "type": "Property",
-                    "value": {
-                        "@type": "DateTime",
-                    "@value": self.leaf_wetness_timestamp
-                    }
-                }
-            },
-            "leafRelativeHumidity": {
-                "type": "Property",
-                "value": self.leaf_relative_humidity,
-                "unitCode": self.leaf_relative_humidity_unit,
-                "timestamp": {
-                    "type": "Property",
-                    "value": {
-                        "@type": "DateTime",
-                        "@value": self.leaf_relative_humidity_timestamp
-                    }
-                }
-            },
-            "leafTemperature": {
-                "type": "Property",
-                "value": self.leaf_temperature,
-                "unitCode": self.leaf_temperature_unit,
-                "timestamp": {
-                    "type": "Property",
-                    "value": {
-                        "@type": "DateTime",
-                        "@value": self.leaf_temperature_timestamp
-                    }
-                }
-            },
-            "airTemperature": {
-                "type": "Property",
-                "value": self.air_temperature,
-                "unitCode": self.air_temperature_unit,
-                "timestamp": {
-                    "type": "Property",
-                    "value": {
-                        "@type": "DateTime",
-                        "@value": self.air_temperature_timestamp
-                    }
-                }
-            },
-            "solarRadiation": {
-                "type": "Property",
-                "value": self.solar_radiation,
-                "unitCode":  self.solar_radiation_unit,
-                "timestamp": {
-                    "type": "Property",
-                    "value": {
-                        "@type": "DateTime",
-                        "@value": self.solar_radiation_timestamp
-                    }
-                }
-            },
-            "relativeHumidity": {
-                "type": "Property",
-                "value": self.relative_humidity,
-                "unitCode":  self.relative_humidity_unit,
-                "timestamp": {
-                    "type": "Property",
-                    "value": {
-                        "@type": "DateTime",
-                        "@value": self.relative_humidity_timestamp
-                    }
-                }
-            },
-            "atmosphericPressure": {
-                "type": "Property",
-                "value": self.atmospheric_pressure,
-                "unitCode":  self.atmospheric_pressure_unit,
-                "timestamp": {
-                    "type": "Property",
-                    "value": {
-                        "@type": "DateTime",
-                        "@value": self.atmospheric_pressure_timestamp
-                    }
-                }
-            },
-            "description": {
+
+
+        if self.description:
+            agri_parcel_record_data["description"] = {
                 "type": "Property",
                 "value": self.description
-            },
-            "hasDevice": {
+            }
+
+        if self.has_device:
+            agri_parcel_record_data["hasDevice"] = {
                 "type": "Relationship",
                 "object": self.has_device.split(',') if isinstance(self.has_device, str) else self.has_device
-            },
-            "observedAt":  self.observed_at
-                
-        }
+            }
+
+        if self.observed_at:
+            agri_parcel_record_data["observedAt"] = self.observed_at
 
         return agri_parcel_record_data
+
 
     def validate_smart_data_model(data):
         required_fields = ['dateCreated', 'dateModified',  'hasAgriParcel', 'location', 'soilTemperature']

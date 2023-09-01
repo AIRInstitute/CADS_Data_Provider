@@ -29,11 +29,11 @@ class AgriGreenHouse(ModelBase):
             drain_flow_min_value (float, optional): The minimum drain flow in the greenhouse.
             has_device (str, optional): The device associated with the greenhouse.
     """
-    def __init__(self, relative_humidity, co2, owned_by=None, related_source=None, see_also=None, belongs_to=None,
+    def __init__(self, id, relative_humidity, co2, owned_by=None, related_source=None, see_also=None, belongs_to=None,
                  has_agri_parcel_parent=None, has_agri_parcel_children=None, has_weather_observed=None,
                  has_water_quality_observed=None, leaf_temperature=None, daily_light=None, drain_flow=None, drain_flow_max_value=None, 
                  drain_flow_min_value=None, has_device=None, date_created=None, date_modified=None):
-        self.id = generate_urn("AgriGreenHouse")
+        self.id = id
         self.type = "AgriGreenHouse"
         self.date_created = date_created or datetime.utcnow()
         self.date_modified = date_modified or datetime.utcnow()
@@ -63,91 +63,100 @@ class AgriGreenHouse(ModelBase):
     def to_smart_data_model(self):
         """
         This method converts the current object into a dictionary that adheres to the Smart Data Model standard.
-        
+
         Returns:
             A dictionary representing the current Smart Data Model.
         """
         agri_greenhouse_data = {
             "id": self.id,
-            "type": self.type,
-            "dateCreated": {
+            "type": self.type
+        }
+
+        if self.date_created:
+            agri_greenhouse_data["dateCreated"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_created
                 }
-            },
-            "dateModified": {
+            }
+
+        if self.date_modified:
+            agri_greenhouse_data["dateModified"] = {
                 "type": "Property",
                 "value": {
                     "@type": "DateTime",
                     "@value": self.date_modified
                 }
-            },
-            "ownedBy": {
+            }
+
+        if self.owned_by:
+            agri_greenhouse_data["ownedBy"] = {
                 "type": "Relationship",
                 "object": self.owned_by
-            },
-            "relatedSource": {
+            }
+
+        if self.related_source:
+            agri_greenhouse_data["relatedSource"] = {
                 "value": [
                     {
                         "application": self.related_source,
                         "applicationEntityId": "app:greenhouse1"
                     }
                 ]
-            },
-            "seeAlso":  {
+            }
+
+        if self.see_also:
+            agri_greenhouse_data["seeAlso"] = {
                 "type": "Relationship",
                 "object": self.see_also.split(',') if isinstance(self.see_also, str) else self.see_also
-            },
-            "belongsTo":  self.belongs_to,       
-            "hasAgriParcelParent":  {
-                "type": "Relationship",
-                "object": self.has_agri_parcel_parent.split(',') if isinstance(self.has_agri_parcel_parent, str) else self.has_agri_parcel_parent
-            },
-            "hasAgriParcelChildren":  {
-                "type": "Relationship",
-                "object": self.has_agri_parcel_children.split(',') if isinstance(self.has_agri_parcel_children, str) else self.has_agri_parcel_children
-            },
-            "hasWeatherObserved": {
-                "type": "Relationship",
-                "object": self.has_weather_observed.split(',') if isinstance(self.has_weather_observed, str) else self.has_weather_observed
-            },
-            "hasWaterQualityObserved":{
-                "type": "Relationship",
-                "object": self.has_water_quality_observed.split(',') if isinstance(self.has_water_quality_observed, str) else self.has_water_quality_observed
-            },
-            "relativeHumidity": {
+            }
+
+        if self.belongs_to:
+            agri_greenhouse_data["belongsTo"] = self.belongs_to
+
+        # Repeated pattern for different properties
+        relationships = [
+            ("hasAgriParcelParent", self.has_agri_parcel_parent),
+            ("hasAgriParcelChildren", self.has_agri_parcel_children),
+            ("hasWeatherObserved", self.has_weather_observed),
+            ("hasWaterQualityObserved", self.has_water_quality_observed),
+            ("hasDevice", self.has_device)
+        ]
+
+        for rel, value in relationships:
+            if value:
+                agri_greenhouse_data[rel] = {
+                    "type": "Relationship",
+                    "object": value.split(',') if isinstance(value, str) else value
+                }
+
+        properties = [
+            ("relativeHumidity", self.relative_humidity),
+            ("leafTemperature", self.leaf_temperature),
+            ("co2", self.co2),
+            ("dailyLight", self.daily_light)
+        ]
+
+        for prop, value in properties:
+            if value:
+                agri_greenhouse_data[prop] = {
+                    "type": "Property",
+                    "value": value
+                }
+
+        if self.drain_flow or self.drain_flow_max_value or self.drain_flow_min_value:
+            agri_greenhouse_data["drainFlow"] = {
                 "type": "Property",
-                "value": self.relative_humidity
-            },
-            "leafTemperature": {
-                "type": "Property",
-                "value": self.leaf_temperature
-            },
-            "co2": {
-                "type": "Property",
-                "value": self.co2
-            },
-            "dailyLight": {
-                "type": "Property",
-                "value": self.daily_light
-            },
-            "drainFlow": {
-                "type": "Property",
-                "value": { 
+                "value": {
                     "value": self.drain_flow,
-                    "maxValue": self.drain_flow_max_value, 
+                    "maxValue": self.drain_flow_max_value,
                     "minValue": self.drain_flow_min_value
                 }
-            },
-            "hasDevice":  {
-                "type": "Relationship",
-                "object": self.has_device.split(',') if isinstance(self.has_device, str) else self.has_device
             }
-        }
 
         return agri_greenhouse_data
+
 
     def validate_smart_data_model(data):
         required_fields = ['dateCreated', 'dateModified', 'relativeHumidity', 'co2']
